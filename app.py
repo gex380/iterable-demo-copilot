@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components
 import openai
 
 # --- Page Configuration ---
@@ -104,12 +105,47 @@ journey_flows = {
 # --- Mermaid Renderer ---
 st.subheader(f"Customer Journey: {persona}")
 
-# Use Streamlit's native mermaid support
-st.markdown(f"""
-```mermaid
+# Create HTML with Mermaid diagram
+mermaid_html = f"""
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/mermaid@9.4.3/dist/mermaid.min.js"></script>
+    <style>
+        body {{
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #ffffff;
+        }}
+        .mermaid {{
+            text-align: center;
+        }}
+    </style>
+</head>
+<body>
+    <div class="mermaid">
 {journey_flows[persona]}
-```
-""")
+    </div>
+    <script>
+        mermaid.initialize({{
+            startOnLoad: true,
+            theme: 'default',
+            securityLevel: 'loose',
+            flowchart: {{
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            }}
+        }});
+    </script>
+</body>
+</html>
+"""
+
+components.html(mermaid_html, height=700, scrolling=True)
 
 # --- Summary Card ---
 summaries = {
