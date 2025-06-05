@@ -1,5 +1,4 @@
 import streamlit as st
-import streamlit.components.v1 as components
 import openai
 
 # --- Page Configuration ---
@@ -102,21 +101,15 @@ journey_flows = {
     '''
 }
 
-# --- Mermaid Renderer (Using v10.4.0 for compatibility) ---
+# --- Mermaid Renderer ---
 st.subheader(f"Customer Journey: {persona}")
-components.html(
-    f"""
-    <div class="mermaid">
-    {journey_flows[persona]}
-    </div>
-    <script type="module">
-      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10.4.0/dist/mermaid.esm.min.mjs';
-      mermaid.initialize({{ startOnLoad: true }});
-    </script>
-    """,
-    height=600,
-    scrolling=True
-)
+
+# Use Streamlit's native mermaid support
+st.markdown(f"""
+```mermaid
+{journey_flows[persona]}
+```
+""")
 
 # --- Summary Card ---
 summaries = {
