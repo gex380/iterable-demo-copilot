@@ -48,6 +48,7 @@ if persona != st.session_state.current_persona:
     st.session_state.journey_optimization = ""
     st.session_state.ab_test_strategy = ""
     st.session_state.integration_analysis = ""
+    st.session_state.business_impact = ""
     st.rerun()
 
 # --- Event Selector ---
@@ -88,6 +89,8 @@ if "ab_test_strategy" not in st.session_state:
     st.session_state.ab_test_strategy = ""
 if "integration_analysis" not in st.session_state:
     st.session_state.integration_analysis = ""
+if "business_impact" not in st.session_state:
+    st.session_state.business_impact = ""
 
 if st.button("Add Event to Timeline"):
     if selected_event not in st.session_state.event_timeline:
@@ -100,6 +103,7 @@ if st.button("Reset Timeline"):
     st.session_state.journey_optimization = ""
     st.session_state.ab_test_strategy = ""
     st.session_state.integration_analysis = ""
+    st.session_state.business_impact = ""
 
 if st.session_state.event_timeline:
     st.markdown("### Simulated Event Timeline")
@@ -329,6 +333,7 @@ with st.expander("A/B Test Setup & Analysis", expanded=False):
         st.session_state.campaign_suggestion = ""
         st.session_state.journey_optimization = ""
         st.session_state.integration_analysis = ""
+        st.session_state.business_impact = ""
         
         with st.spinner("Generating AI-powered test strategy..."):
             try:
@@ -532,6 +537,7 @@ with col1:
         st.session_state.journey_optimization = ""
         st.session_state.ab_test_strategy = ""
         st.session_state.integration_analysis = ""
+        st.session_state.business_impact = ""
         
         with st.spinner("Generating campaign suggestions..."):
             try:
@@ -581,6 +587,7 @@ with col2:
         st.session_state.campaign_suggestion = ""
         st.session_state.ab_test_strategy = ""
         st.session_state.integration_analysis = ""
+        st.session_state.business_impact = ""
         
         with st.spinner("Analyzing journey optimization..."):
             try:
