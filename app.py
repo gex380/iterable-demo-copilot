@@ -18,11 +18,9 @@ This tool simulates how a Solutions Consultant at Iterable might demonstrate cus
 2. **Choose an event** to simulate user behavior (e.g., cart abandonment).
 3. Click **'Add Event to Timeline'** to build up a sequence of events.
 4. View the **journey diagram**, which highlights key touchpoints and stages.
-5. Click **'Ask AI for Campaign Suggestions'** to receive:
-   - A recommended **next campaign action**
-   - The **node** in the journey it corresponds to
-   - A strategic explanation for why it's the best next step
-6. The recommended node will be **highlighted in yellow**.
+5. Click **'Ask AI for Campaign Suggestions'** to receive campaign recommendations.
+6. Click **'Ask AI for Journey Optimization'** to get strategic journey improvements.
+7. The recommended nodes will be **highlighted in yellow**.
 
 You can reset the timeline at any time, or experiment with different personas and user behaviors.
     """)
@@ -41,8 +39,8 @@ if persona != st.session_state.current_persona:
     st.session_state.current_persona = persona
     st.session_state.event_timeline = []
     st.session_state.next_node_id = ""
-    st.session_state.event_recommendation = ""
-    st.session_state.campaign_strategy = ""
+    st.session_state.campaign_suggestion = ""
+    st.session_state.journey_optimization = ""
     st.rerun()
 
 # --- Event Selector ---
@@ -75,10 +73,10 @@ if "event_timeline" not in st.session_state:
     st.session_state.event_timeline = []
 if "next_node_id" not in st.session_state:
     st.session_state.next_node_id = ""
-if "event_recommendation" not in st.session_state:
-    st.session_state.event_recommendation = ""
-if "campaign_strategy" not in st.session_state:
-    st.session_state.campaign_strategy = ""
+if "campaign_suggestion" not in st.session_state:
+    st.session_state.campaign_suggestion = ""
+if "journey_optimization" not in st.session_state:
+    st.session_state.journey_optimization = ""
 
 if st.button("Add Event to Timeline"):
     if selected_event not in st.session_state.event_timeline:
@@ -87,8 +85,8 @@ if st.button("Add Event to Timeline"):
 if st.button("Reset Timeline"):
     st.session_state.event_timeline = []
     st.session_state.next_node_id = ""
-    st.session_state.event_recommendation = ""
-    st.session_state.campaign_strategy = ""
+    st.session_state.campaign_suggestion = ""
+    st.session_state.journey_optimization = ""
 
 if st.session_state.event_timeline:
     st.markdown("### Simulated Event Timeline")
@@ -256,26 +254,19 @@ Use the AI suggestions to understand optimal engagement points in the journey.
 if highlight_node:
     st.info(f"🎯 **Event Simulation:** {selected_event} - Highlighted in journey diagram")
 
-# Display Event Recommendation
-if st.session_state.event_recommendation:
-    st.success(f"💡 **Event Recommendation:**")
-    st.markdown(f"{st.session_state.event_recommendation}")
+# --- AI Suggestion Buttons ---
+col1, col2 = st.columns(2)
 
-# Display Campaign Strategy
-if st.session_state.campaign_strategy:
-    st.success(f"🎯 **Campaign Strategy Recommendation:**")
-    st.markdown(f"{st.session_state.campaign_strategy}")
+with col1:
+    if st.button("🤖 Ask AI for Campaign Suggestions", use_container_width=True):
+        with st.spinner("Generating campaign suggestions..."):
+            try:
+                client = openai.OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+                timeline = st.session_state.event_timeline
+                event_history = ", ".join(timeline) if timeline else "No events simulated."
 
-# --- GPT Integration: AI Suggestions ---
-if st.button("Ask AI for Campaign Suggestions"):
-    with st.spinner("Generating AI suggestions..."):
-        try:
-            client = openai.OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
-            timeline = st.session_state.event_timeline
-            event_history = ", ".join(timeline) if timeline else "No events simulated."
-
-            prompt = f"""
-You are a senior marketing strategist. Based on the customer journey for persona '{persona}', and the following event timeline:
+                prompt = f"""
+You are a senior marketing strategist at Iterable. Based on the customer journey for persona '{persona}', and the following event timeline:
 {event_history}
 
 Available journey steps for {persona}:
@@ -288,37 +279,71 @@ Available journey steps for {persona}:
 Suggest the next best campaign action. Provide:
 1. The **recommended action** (e.g. "Send Email with 10% discount")
 2. A **brief explanation** (why this is the right step strategically)
+3. **Expected outcome** (what you expect to happen)
 
-Format:
-Recommended Action: <Specific action>
-Strategic Reasoning: <Short explanation>
-            """
+Format your response clearly with headers.
+                """
 
-            response = client.chat.completions.create(
-                model="gpt-4",
-                messages=[
-                    {"role": "system", "content": "You are a senior marketing strategist specializing in customer engagement and MarTech."},
-                    {"role": "user", "content": prompt}
-                ],
-                temperature=0.7,
-                max_tokens=500
-            )
+                response = client.chat.completions.create(
+                    model="gpt-4",
+                    messages=[
+                        {"role": "system", "content": "You are a senior marketing strategist specializing in customer engagement and MarTech."},
+                        {"role": "user", "content": prompt}
+                    ],
+                    temperature=0.7,
+                    max_tokens=500
+                )
 
-            suggestions = response.choices[0].message.content
+                st.session_state.campaign_suggestion = response.choices[0].message.content
+                st.rerun()
 
-            # Extract recommended action from GPT response
-            match_action = re.search(r"Recommended Action:\s*(.*)", suggestions)
-            match_reason = re.search(r"Strategic Reasoning:\s*(.*)", suggestions)
+            except Exception as e:
+                st.error(f"Error generating campaign suggestions: {str(e)}")
+                st.info("Please check your OpenAI API key configuration in Streamlit secrets.")
 
-            if match_action:
-                st.session_state.next_node_reason = match_action.group(1)
-            if match_reason:
-                st.session_state.next_node_reason += f" - {match_reason.group(1)}"
+with col2:
+    if st.button("🚀 Ask AI for Journey Optimization", use_container_width=True):
+        with st.spinner("Analyzing journey optimization..."):
+            try:
+                client = openai.OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+                timeline = st.session_state.event_timeline
+                event_history = ", ".join(timeline) if timeline else "No events simulated."
 
-            st.markdown("### AI Campaign Suggestion Response")
-            st.markdown(suggestions)
-            st.rerun()  # Changed from st.experimental_rerun()
+                prompt = f"""
+You are a customer journey optimization expert at Iterable. Analyze the current journey for persona '{persona}' and event timeline:
+{event_history}
 
-        except Exception as e:
-            st.error(f"Error generating AI suggestions: {str(e)}")
-            st.info("Please check your OpenAI API key configuration in Streamlit secrets.")
+Provide strategic recommendations for:
+1. **Journey Improvements** - How to optimize the current flow
+2. **Timing Adjustments** - Better wait times or triggers
+3. **Personalization Opportunities** - Ways to make it more relevant
+4. **Performance Metrics** - Key KPIs to track
+
+Focus on practical, actionable insights that would improve conversion rates and customer experience.
+                """
+
+                response = client.chat.completions.create(
+                    model="gpt-4",
+                    messages=[
+                        {"role": "system", "content": "You are a customer journey optimization expert specializing in lifecycle marketing and conversion optimization."},
+                        {"role": "user", "content": prompt}
+                    ],
+                    temperature=0.7,
+                    max_tokens=600
+                )
+
+                st.session_state.journey_optimization = response.choices[0].message.content
+                st.rerun()
+
+            except Exception as e:
+                st.error(f"Error generating journey optimization: {str(e)}")
+                st.info("Please check your OpenAI API key configuration in Streamlit secrets.")
+
+# --- Display AI Responses ---
+if st.session_state.campaign_suggestion:
+    st.success("💡 **Campaign Suggestion:**")
+    st.markdown(st.session_state.campaign_suggestion)
+
+if st.session_state.journey_optimization:
+    st.success("🚀 **Journey Optimization:**")
+    st.markdown(st.session_state.journey_optimization)
