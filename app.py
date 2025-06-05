@@ -325,6 +325,12 @@ with st.expander("A/B Test Setup & Analysis", expanded=False):
         st.caption("AI will use this context to generate relevant test strategies")
 
     if st.button("Generate A/B Test Strategy"):
+        # Clear other AI responses
+        st.session_state.campaign_suggestion = ""
+        st.session_state.journey_optimization = ""
+        st.session_state.performance_analysis = ""
+        st.session_state.integration_analysis = ""
+        
         with st.spinner("Generating AI-powered test strategy..."):
             try:
                 client = openai.OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
@@ -428,6 +434,12 @@ with st.expander("Data Flow & Integration Analysis", expanded=False):
         ])
 
     if st.button("Generate Integration Architecture"):
+        # Clear other AI responses
+        st.session_state.campaign_suggestion = ""
+        st.session_state.journey_optimization = ""
+        st.session_state.ab_test_strategy = ""
+        st.session_state.performance_analysis = ""
+        
         with st.spinner("Analyzing integration requirements..."):
             try:
                 client = openai.OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
@@ -472,25 +484,33 @@ Focus on practical, enterprise-grade recommendations that align with their compl
 
     # Simple Data Flow Visualization
     if data_sources and activation_channels:
-        st.markdown("**Data Flow Visualization**")
+        st.markdown("**Data Flow Architecture**")
+        
+        # Determine sync method based on real-time requirements
+        if real_time_requirements == "Real-time (under 1 minute)":
+            sync_method = "Real-time API/Webhook"
+        elif real_time_requirements == "Near real-time (5-15 minutes)":
+            sync_method = "Near real-time API"
+        else:
+            sync_method = "Batch processing"
         
         # Create a simple text-based flow diagram
-        flow_diagram = "**Data Sources** → **Iterable Platform** → **Activation Channels**\n\n"
+        flow_diagram = "DATA SOURCES → ITERABLE PLATFORM → ACTIVATION CHANNELS\n\n"
         
-        flow_diagram += "**INBOUND:**\n"
+        flow_diagram += "INBOUND:\n"
         for source in data_sources:
-            flow_diagram += f"• {source} → Real-time API/Webhook → Iterable\n"
+            flow_diagram += f"• {source} → {sync_method} → Iterable\n"
         
-        flow_diagram += f"\n**PROCESSING:**\n"
+        flow_diagram += f"\nPROCESSING:\n"
         flow_diagram += f"• Journey Logic ({persona} persona)\n"
         flow_diagram += f"• A/B Testing & Optimization\n"
         flow_diagram += f"• Personalization Engine\n"
         
-        flow_diagram += f"\n**OUTBOUND:**\n"
+        flow_diagram += f"\nOUTBOUND:\n"
         for channel in activation_channels:
-            flow_diagram += f"• Iterable → {channel} Delivery\n"
+            flow_diagram += f"• Iterable → {channel}\n"
             
-        flow_diagram += f"\n**SYNC FREQUENCY:** {real_time_requirements}"
+        flow_diagram += f"\nSYNC FREQUENCY: {real_time_requirements}"
         
         st.code(flow_diagram, language=None)
 
@@ -499,6 +519,12 @@ col1, col2, col3 = st.columns(3)
 
 with col1:
     if st.button("Campaign Suggestions", use_container_width=True):
+        # Clear other AI responses
+        st.session_state.journey_optimization = ""
+        st.session_state.ab_test_strategy = ""
+        st.session_state.performance_analysis = ""
+        st.session_state.integration_analysis = ""
+        
         with st.spinner("Generating campaign suggestions..."):
             try:
                 client = openai.OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
@@ -543,6 +569,12 @@ Format your response clearly with headers.
 
 with col2:
     if st.button("Journey Optimization", use_container_width=True):
+        # Clear other AI responses
+        st.session_state.campaign_suggestion = ""
+        st.session_state.ab_test_strategy = ""
+        st.session_state.performance_analysis = ""
+        st.session_state.integration_analysis = ""
+        
         with st.spinner("Analyzing journey optimization..."):
             try:
                 client = openai.OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
@@ -581,6 +613,12 @@ Focus on practical, actionable insights that would improve conversion rates and 
 
 with col3:
     if st.button("Performance Analysis", use_container_width=True):
+        # Clear other AI responses
+        st.session_state.campaign_suggestion = ""
+        st.session_state.journey_optimization = ""
+        st.session_state.ab_test_strategy = ""
+        st.session_state.integration_analysis = ""
+        
         with st.spinner("Analyzing campaign performance..."):
             try:
                 client = openai.OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
