@@ -45,29 +45,29 @@ if persona != st.session_state.current_persona:
     st.rerun()
 
 # --- Event Selector ---
-event_options = [
-    "Cart Abandoned",
-    "Email Opened", 
-    "Email Unopened",
-    "Push Notification Sent",
-    "Push Notification Ignored",
-    "SMS Sent",
-    "SMS Ignored",
-    "User Inactive",
-    "User Engaged",
-    "Browsed Product/Service",
-    "Made Purchase",
-    "Left Review",
-    "Shared Content",
-    "Unsubscribed",
-    "Trial Started",
-    "Trial Expired",
-    "Subscription Cancelled",
-    "Support Ticket Created",
-    "App Downloaded",
-    "Account Created"
-]
-selected_event = st.selectbox("Simulate User Event:", event_options)
+event_options = {
+    "GlowSkin": [
+        "Cart Abandoned", "Email Opened", "Email Unopened", "Push Notification Ignored", 
+        "SMS Received", "Product Review Left", "Wishlist Item Added", "Discount Code Used",
+        "Social Media Shared", "Return Customer", "Subscription Started", "Unsubscribed"
+    ],
+    "PulseFit": [
+        "User Inactive", "Push Notification Sent", "Email Unopened", "Workout Completed",
+        "App Opened", "Premium Upgrade", "Goal Achievement", "Friend Invited", 
+        "Progress Photo Shared", "Subscription Cancelled", "Support Contact", "Tutorial Skipped"
+    ],
+    "JetQuest": [
+        "Flight Searched", "Booking Abandoned", "Email Opened", "SMS Clicked", 
+        "Price Alert Set", "Loyalty Points Earned", "Review Left", "Newsletter Subscribed",
+        "Mobile App Downloaded", "Customer Service Contact", "Refund Requested", "Rebooking Attempt"
+    ],
+    "LeadSync": [
+        "Trial Started", "Demo Requested", "Email Unopened", "Feature Explored",
+        "Integration Attempted", "Onboarding Completed", "Team Member Invited", "Billing Info Added",
+        "Support Ticket Created", "Webinar Attended", "Case Study Downloaded", "Contract Signed"
+    ]
+}
+selected_event = st.selectbox("Simulate User Event:", event_options.get(persona, []))
 
 # --- Timeline Tracking ---
 if "event_timeline" not in st.session_state:
@@ -95,40 +95,24 @@ else:
 # --- Event Highlight Mapping ---
 event_to_node_map = {
     "GlowSkin": {
-        "Cart Abandoned": "E", "Email Opened": "H", "Push Notification Ignored": "K",
-        "Email Unopened": "H", "Push Notification Sent": "K", "SMS Sent": "E",
-        "SMS Ignored": "E", "User Inactive": "B", "User Engaged": "D",
-        "Browsed Product/Service": "A", "Made Purchase": "D", "Left Review": "D",
-        "Shared Content": "D", "Unsubscribed": "L", "Trial Started": "A",
-        "Trial Expired": "L", "Subscription Cancelled": "L", "Support Ticket Created": "H",
-        "App Downloaded": "A", "Account Created": "A"
+        "Cart Abandoned": "E", "Email Opened": "H", "Email Unopened": "H", "Push Notification Ignored": "K",
+        "SMS Received": "E", "Product Review Left": "D", "Wishlist Item Added": "A", "Discount Code Used": "D",
+        "Social Media Shared": "D", "Return Customer": "A", "Subscription Started": "D", "Unsubscribed": "L"
     },
     "PulseFit": {
-        "Cart Abandoned": "E", "Email Opened": "H", "Push Notification Ignored": "K",
-        "Email Unopened": "H", "Push Notification Sent": "E", "SMS Sent": "K",
-        "SMS Ignored": "K", "User Inactive": "E", "User Engaged": "D",
-        "Browsed Product/Service": "A", "Made Purchase": "D", "Left Review": "D",
-        "Shared Content": "D", "Unsubscribed": "L", "Trial Started": "A",
-        "Trial Expired": "L", "Subscription Cancelled": "L", "Support Ticket Created": "H",
-        "App Downloaded": "A", "Account Created": "A"
+        "User Inactive": "E", "Push Notification Sent": "E", "Email Unopened": "H", "Workout Completed": "D",
+        "App Opened": "A", "Premium Upgrade": "D", "Goal Achievement": "D", "Friend Invited": "D",
+        "Progress Photo Shared": "D", "Subscription Cancelled": "L", "Support Contact": "H", "Tutorial Skipped": "E"
     },
     "JetQuest": {
-        "Cart Abandoned": "E", "Email Opened": "E", "Push Notification Ignored": "K",
-        "Email Unopened": "E", "Push Notification Sent": "K", "SMS Sent": "H",
-        "SMS Ignored": "H", "User Inactive": "B", "User Engaged": "D",
-        "Browsed Product/Service": "A", "Made Purchase": "D", "Left Review": "D",
-        "Shared Content": "D", "Unsubscribed": "L", "Trial Started": "A",
-        "Trial Expired": "L", "Subscription Cancelled": "L", "Support Ticket Created": "E",
-        "App Downloaded": "A", "Account Created": "A"
+        "Flight Searched": "A", "Booking Abandoned": "E", "Email Opened": "E", "SMS Clicked": "H",
+        "Price Alert Set": "A", "Loyalty Points Earned": "D", "Review Left": "D", "Newsletter Subscribed": "H",
+        "Mobile App Downloaded": "A", "Customer Service Contact": "H", "Refund Requested": "K", "Rebooking Attempt": "E"
     },
     "LeadSync": {
-        "Cart Abandoned": "E", "Email Opened": "E", "Push Notification Ignored": "K",
-        "Email Unopened": "E", "Push Notification Sent": "H", "SMS Sent": "K",
-        "SMS Ignored": "K", "User Inactive": "E", "User Engaged": "D",
-        "Browsed Product/Service": "A", "Made Purchase": "D", "Left Review": "D",
-        "Shared Content": "D", "Unsubscribed": "L", "Trial Started": "A",
-        "Trial Expired": "L", "Subscription Cancelled": "L", "Support Ticket Created": "E",
-        "App Downloaded": "A", "Account Created": "A"
+        "Trial Started": "A", "Demo Requested": "A", "Email Unopened": "E", "Feature Explored": "A",
+        "Integration Attempted": "H", "Onboarding Completed": "D", "Team Member Invited": "D", "Billing Info Added": "D",
+        "Support Ticket Created": "H", "Webinar Attended": "H", "Case Study Downloaded": "E", "Contract Signed": "D"
     }
 }
 
