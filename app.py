@@ -12,7 +12,7 @@ persona = st.sidebar.selectbox("Choose a Persona:", persona_list)
 
 # --- Mermaid.js Journey Maps ---
 journey_flows = {
-    "GlowSkin": """
+    "GlowSkin": '''
         flowchart TD
             Start([User Adds Items to Cart])
             Wait1[Wait 2 Hours]
@@ -20,20 +20,20 @@ journey_flows = {
             SMS[Send SMS: \\\"You left something behind\\\"]
             Wait2[Wait 4 Hours]
             Decision2{Has User Purchased?}
-            Email[Send Email: \\\"Still want that glow? Here's 10% off\\\"]
+            Email[Send Email: \\\"Still want that glow? Here's 10 percent off\\\"]
             Wait3[Wait 2 Days]
             Decision3{Has User Purchased?}
             Push[Send Push: \\\"Your GlowKit is still waiting\\\"]
             ExitSuccess([Exit: Purchase Completed])
             ExitFail([Exit: No Response After 3 Touches])
-
+    
             Start --> Wait1 --> Decision1
-            Decision1 -- \"Yes\" --> ExitSuccess
-            Decision1 -- \"No\" --> SMS --> Wait2 --> Decision2
-            Decision2 -- \"Yes\" --> ExitSuccess
-            Decision2 -- \"No\" --> Email --> Wait3 --> Decision3
-            Decision3 -- \"Yes\" --> ExitSuccess
-            Decision3 -- \"No\" --> Push --> ExitFail
+            Decision1 -- Yes --> ExitSuccess
+            Decision1 -- No --> SMS --> Wait2 --> Decision2
+            Decision2 -- Yes --> ExitSuccess
+            Decision2 -- No --> Email --> Wait3 --> Decision3
+            Decision3 -- Yes --> ExitSuccess
+            Decision3 -- No --> Push --> ExitFail
     """,
     "PulseFit": """
         flowchart TD
