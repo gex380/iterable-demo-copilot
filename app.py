@@ -44,12 +44,13 @@ event_to_node_map = {
 }
 
 highlight_node = event_to_node_map.get(persona, {}).get(selected_event, "")
-highlight_class = "classDef highlight fill=#ffcc00;"
+highlight_class = "classDef highlight fill:#ffcc00;"
 highlight_command = f"class {highlight_node} highlight;" if highlight_node else ""
 
 # --- Journey Definitions with Highlight Support ---
-journey_flows = {
-    "GlowSkin": f'''graph TD
+def get_journey_flow(persona_name, highlight_class_def, highlight_command_def):
+    flows = {
+        "GlowSkin": f'''graph TD
     A[User Adds Items to Cart] --> B[Wait 2 Hours]
     B --> C{{Has User Purchased?}}
     C -->|Yes| D[Exit: Purchase Completed]
@@ -63,10 +64,10 @@ journey_flows = {
     J -->|Yes| D
     J -->|No| K[Send Push: Your GlowKit is waiting]
     K --> L[Exit: No Response After 3 Touches]
-    {highlight_class}
-    {highlight_command}
+    {highlight_class_def}
+    {highlight_command_def}
     ''',
-    "PulseFit": f'''graph TD
+        "PulseFit": f'''graph TD
     A[User Signs Up for App] --> B[Wait 24 Hours]
     B --> C{{User Active in App?}}
     C -->|Yes| D[Exit: User Engaged]
@@ -80,10 +81,10 @@ journey_flows = {
     J -->|Yes| D
     J -->|No| K[Send SMS: Get 30% off premium]
     K --> L[Exit: User Remains Inactive]
-    {highlight_class}
-    {highlight_command}
+    {highlight_class_def}
+    {highlight_command_def}
     ''',
-    "JetQuest": f'''graph TD
+        "JetQuest": f'''graph TD
     A[User Browses Flight Deals] --> B[Wait 1 Hour]
     B --> C{{User Booked Flight?}}
     C -->|Yes| D[Exit: Booking Completed]
@@ -97,10 +98,10 @@ journey_flows = {
     J -->|Yes| D
     J -->|No| K[Send Retargeting Ad: Similar destinations]
     K --> L[Exit: Deal Expired]
-    {highlight_class}
-    {highlight_command}
+    {highlight_class_def}
+    {highlight_command_def}
     ''',
-    "LeadSync": f'''graph TD
+        "LeadSync": f'''graph TD
     A[User Starts Free Trial] --> B[Wait 2 Days]
     B --> C{{User Setup Complete?}}
     C -->|Yes| D[Exit: Trial Converted]
@@ -114,37 +115,41 @@ journey_flows = {
     J -->|Yes| D
     J -->|No| K[Alert CSM: High-value prospect needs attention]
     K --> L[Exit: Trial Expired]
-    {highlight_class}
-    {highlight_command}
+    {highlight_class_def}
+    {highlight_command_def}
     '''
-}
+    }
+    return flows.get(persona_name, "")
 
 # --- Mermaid Renderer ---
 st.subheader(f"Customer Journey: {persona}")
 
-mermaid_html = f"""
+# Get the current journey flow
+current_flow = get_journey_flow(persona, highlight_class, highlight_command)
+
+mermaid_html = """
 <!DOCTYPE html>
-<html lang=\"en\">
+<html lang="en">
 <head>
-    <meta charset=\"UTF-8\">
-    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
-    <script src=\"https://unpkg.com/mermaid@9.4.3/dist/mermaid.min.js\"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/mermaid@9.4.3/dist/mermaid.min.js"></script>
     <style>
-        body {{ font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #ffffff; }}
-        .mermaid {{ text-align: center; }}
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #ffffff; }
+        .mermaid { text-align: center; }
     </style>
 </head>
 <body>
-    <div class=\"mermaid\">
-{journey_flows[persona]}
+    <div class="mermaid">
+""" + current_flow + """
     </div>
     <script>
-        mermaid.initialize({{
+        mermaid.initialize({
             startOnLoad: true,
             theme: 'default',
             securityLevel: 'loose',
-            flowchart: {{ useMaxWidth: true, htmlLabels: true, curve: 'basis' }}
-        }});
+            flowchart: { useMaxWidth: true, htmlLabels: true, curve: 'basis' }
+        });
     </script>
 </body>
 </html>
@@ -162,6 +167,10 @@ summaries = {
 
 st.markdown(f"**Use Case Summary:** {summaries.get(persona, 'N/A')}")
 
+# --- Event Status Display ---
+if highlight_node:
+    st.info(f"🎯 **Event Simulation:** {selected_event} - Highlighting node {highlight_node} in the journey")
+
 # --- GPT Integration: AI Suggestions ---
 if st.button("Ask AI for Campaign Suggestions"):
     with st.spinner("Generating AI suggestions..."):
@@ -173,6 +182,8 @@ You are a senior marketing strategist. Based on the customer journey below for t
 
 Journey Summary:
 {summaries.get(persona, '')}
+
+Current Event Being Simulated: {selected_event}
 
 Be concise and strategic. Break your response into clearly labeled sections.
             """
