@@ -27,6 +27,7 @@ This tool demonstrates how Iterable transforms disconnected marketing tools into
 - **Journey Optimization**: Strategic improvements to increase conversion rates  
 - **A/B Testing Center**: Scientific approach to validating marketing decisions
 - **ROI Assessment**: Quantified business impact of switching to Iterable's orchestration platform
+- **Competitive Positioning**: Strategic guidance for competing against Braze, Klaviyo, and other major players
 
 This showcases Iterable's unique value: turning your collection of marketing tools into an intelligent, coordinated growth engine.
     """)
@@ -49,6 +50,7 @@ if persona != st.session_state.current_persona:
     st.session_state.journey_optimization = ""
     st.session_state.ab_test_strategy = ""
     st.session_state.business_impact = ""
+    st.session_state.competitive_strategy = ""
     st.rerun()
 
 # --- Event Selector ---
@@ -89,6 +91,8 @@ if "ab_test_strategy" not in st.session_state:
     st.session_state.ab_test_strategy = ""
 if "business_impact" not in st.session_state:
     st.session_state.business_impact = ""
+if "competitive_strategy" not in st.session_state:
+    st.session_state.competitive_strategy = ""
 
 if st.button("Add Event to Timeline"):
     if selected_event not in st.session_state.event_timeline:
@@ -101,6 +105,7 @@ if st.button("Reset Timeline"):
     st.session_state.journey_optimization = ""
     st.session_state.ab_test_strategy = ""
     st.session_state.business_impact = ""
+    st.session_state.competitive_strategy = ""
 
 if st.session_state.event_timeline:
     st.markdown("### Simulated Event Timeline")
@@ -328,6 +333,7 @@ with st.expander("A/B Test Setup & Analysis", expanded=False):
         # Clear other AI responses
         st.session_state.campaign_suggestion = ""
         st.session_state.journey_optimization = ""
+        st.session_state.competitive_strategy = ""
         
         with st.spinner("Generating AI-powered test strategy..."):
             try:
@@ -445,6 +451,7 @@ with st.expander("Why Iterable is Your Marketing Command Center", expanded=False
             st.session_state.campaign_suggestion = ""
             st.session_state.journey_optimization = ""
             st.session_state.ab_test_strategy = ""
+            st.session_state.competitive_strategy = ""
             
             with st.spinner("Calculating personalized business impact..."):
                 try:
@@ -546,7 +553,244 @@ IMPORTANT: Format as a brief, scannable list with numbers. Use "dollars" instead
         with col3:
             st.metric("Customer Satisfaction", "+35%", "↑ Consistent messaging")
 
-# --- AI Suggestion Buttons ---
+# --- Competitive Positioning Module ---
+st.markdown("---")
+st.subheader("Competitive Landscape Analysis")
+
+with st.expander("Strategic Competitive Positioning", expanded=False):
+    st.markdown("""
+    **Position Iterable Against Key Competitors**  
+    
+    Enterprise deals are often competitive. This module helps you understand how to position Iterable's unique advantages 
+    against major competitors based on the specific customer situation and journey context.
+    
+    **Strategic Approach:**
+    - Focus on **fit vs. features** - what matters most for their specific use case
+    - Emphasize **business outcomes** over technical specifications  
+    - Address **real concerns** with professional, value-based responses
+    """)
+    
+    # Competitor Selection and Context
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown("**Competitive Situation**")
+        primary_competitor = st.selectbox("Primary Competitor in Evaluation:", [
+            "Braze",
+            "Klaviyo", 
+            "Salesforce Marketing Cloud",
+            "Mailchimp",
+            "SendGrid/Twilio Engage",
+            "HubSpot",
+            "Adobe Campaign"
+        ])
+        
+        evaluation_stage = st.selectbox("Evaluation Stage:", [
+            "Early research phase",
+            "Vendor shortlist (2-3 options)",
+            "Final decision (head-to-head)",
+            "Incumbent replacement evaluation"
+        ])
+        
+    with col2:
+        st.markdown("**Decision Factors**")
+        key_priorities = st.multiselect("Customer's Top Priorities:", [
+            "Ease of implementation",
+            "Advanced personalization",
+            "Cross-channel orchestration", 
+            "Pricing/ROI",
+            "Scalability",
+            "Integration capabilities",
+            "Mobile-first approach",
+            "Enterprise security/compliance"
+        ], default=["Cross-channel orchestration", "Ease of implementation"])
+        
+        decision_makers = st.multiselect("Key Stakeholders:", [
+            "Marketing Operations",
+            "IT/Engineering", 
+            "CMO/Marketing Leadership",
+            "Procurement/Finance",
+            "Data/Analytics Team"
+        ], default=["Marketing Operations", "CMO/Marketing Leadership"])
+
+    # Competitive Comparison Matrix
+    if primary_competitor:
+        st.markdown(f"**Iterable vs. {primary_competitor} - Key Differentiators:**")
+        
+        # Define competitive advantages for each competitor
+        competitive_advantages = {
+            "Braze": {
+                "Iterable Advantage": "Workflow Flexibility & Speed to Value",
+                "Key Differentiator": "Visual workflow builder vs. code-heavy implementation",
+                "Implementation": "Weeks vs. Months",
+                "Data Model": "Flexible, real-time updates vs. rigid schema",
+                "Pricing": "Transparent, usage-based vs. complex enterprise pricing"
+            },
+            "Klaviyo": {
+                "Iterable Advantage": "Enterprise Scale & Cross-Channel Depth", 
+                "Key Differentiator": "True omnichannel vs. email-centric with add-ons",
+                "Implementation": "Enterprise-ready vs. SMB-focused architecture",
+                "Data Model": "Advanced segmentation vs. basic e-commerce focus",
+                "Pricing": "Predictable scaling vs. rapid price increases"
+            },
+            "Salesforce Marketing Cloud": {
+                "Iterable Advantage": "Modern Architecture & User Experience",
+                "Key Differentiator": "Intuitive interface vs. complex, consultant-dependent",
+                "Implementation": "Self-service vs. heavy professional services",
+                "Data Model": "Cloud-native vs. legacy on-premise thinking", 
+                "Pricing": "All-inclusive vs. expensive add-on modules"
+            },
+            "Mailchimp": {
+                "Iterable Advantage": "Enterprise Capabilities & Advanced Automation",
+                "Key Differentiator": "Sophisticated workflows vs. basic automation",
+                "Implementation": "Enterprise security vs. SMB-focused features",
+                "Data Model": "Advanced personalization vs. template-driven approach",
+                "Pricing": "Enterprise ROI vs. feature limitations at scale"
+            },
+            "SendGrid/Twilio Engage": {
+                "Iterable Advantage": "Marketing-First Platform vs. Developer Tools",
+                "Key Differentiator": "Marketer-friendly interface vs. API-first complexity", 
+                "Implementation": "Business user adoption vs. technical implementation",
+                "Data Model": "Journey orchestration vs. transactional focus",
+                "Pricing": "Marketing ROI vs. developer tooling costs"
+            },
+            "HubSpot": {
+                "Iterable Advantage": "Advanced Lifecycle Marketing vs. CRM-Centric", 
+                "Key Differentiator": "Specialized engagement platform vs. all-in-one limitations",
+                "Implementation": "Deep personalization vs. generic automation",
+                "Data Model": "Flexible data activation vs. CRM data constraints",
+                "Pricing": "Engagement ROI vs. CRM bundle pricing"
+            },
+            "Adobe Campaign": {
+                "Iterable Advantage": "Modern Cloud Platform vs. Legacy Architecture",
+                "Key Differentiator": "User-friendly interface vs. technical complexity",
+                "Implementation": "Fast deployment vs. lengthy implementations", 
+                "Data Model": "Real-time activation vs. batch processing limitations",
+                "Pricing": "Transparent pricing vs. enterprise licensing complexity"
+            }
+        }
+        
+        advantages = competitive_advantages.get(primary_competitor, {})
+        
+        if advantages:
+            # Create comparison table
+            comparison_data = [
+                ["Aspect", "Iterable", primary_competitor],
+                ["Implementation Speed", advantages.get("Implementation", "Fast"), "Varies"],
+                ["User Experience", "Marketer-friendly", "Technical"],
+                ["Data Flexibility", advantages.get("Data Model", "Flexible"), "Limited"],
+                ["Pricing Model", advantages.get("Pricing", "Transparent"), "Complex"]
+            ]
+            
+            # Display as formatted table
+            st.markdown("| Aspect | Iterable | " + primary_competitor + " |")
+            st.markdown("|--------|----------|" + "-" * len(primary_competitor) + "|")
+            for row in comparison_data[1:]:  # Skip header row
+                st.markdown(f"| **{row[0]}** | ✅ {row[1]} | ⚠️ {row[2]} |")
+            
+            st.info(f"**Key Advantage:** {advantages.get('Iterable Advantage', 'Modern platform approach')}")
+
+    # AI-Powered Competitive Strategy
+    if primary_competitor and key_priorities:
+        if st.button("Generate Competitive Strategy"):
+            # Clear other AI responses
+            st.session_state.campaign_suggestion = ""
+            st.session_state.journey_optimization = ""
+            st.session_state.ab_test_strategy = ""
+            
+            with st.spinner("Generating competitive positioning strategy..."):
+                try:
+                    client = openai.OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+                    
+                    prompt = f"""
+You are a senior Iterable solutions consultant preparing for a competitive enterprise deal. Generate a strategic competitive response:
+
+**Competitive Context:**
+- Primary Competitor: {primary_competitor}
+- Customer Priorities: {', '.join(key_priorities)}
+- Decision Makers: {', '.join(decision_makers)}
+- Evaluation Stage: {evaluation_stage}
+- Customer Persona: {persona}
+- Journey Context: {', '.join(st.session_state.event_timeline) if st.session_state.event_timeline else 'Standard journey'}
+
+**Generate a strategic competitive response with:**
+
+1. **Situation Assessment** - Why they're likely considering {primary_competitor} and what matters most
+2. **Positioning Strategy** - How to position Iterable's unique advantages for their specific priorities  
+3. **Stakeholder-Specific Messages** - Different value props for different decision makers
+4. **Competitive Redirection** - How to shift the conversation to Iterable's strengths
+5. **Proof Points** - Specific examples, metrics, or references that counter {primary_competitor}
+
+**Guidelines:**
+- Be professional and respectful of the competitor
+- Focus on customer fit and business outcomes, not just features
+- Address their specific priorities and evaluation context
+- Provide concrete, actionable positioning guidance
+
+Make this sound like strategic sales guidance from an experienced solutions consultant.
+                    """
+
+                    response = client.chat.completions.create(
+                        model="gpt-4",
+                        messages=[
+                            {"role": "system", "content": "You are a senior solutions consultant specializing in competitive enterprise sales strategy and positioning."},
+                            {"role": "user", "content": prompt}
+                        ],
+                        temperature=0.7,
+                        max_tokens=800
+                    )
+
+                    st.session_state.competitive_strategy = response.choices[0].message.content
+                    st.rerun()
+
+                except Exception as e:
+                    st.error(f"Error generating competitive strategy: {str(e)}")
+
+    # Display competitive strategy
+    if hasattr(st.session_state, 'competitive_strategy') and st.session_state.competitive_strategy:
+        st.markdown("**Competitive Positioning Strategy:**")
+        st.success(st.session_state.competitive_strategy)
+
+    # Common Objections & Responses
+    if primary_competitor:
+        st.markdown(f"**Common Objections When Competing vs. {primary_competitor}:**")
+        
+        objections = {
+            "Braze": [
+                "\"Braze has stronger mobile capabilities\" → Highlight Iterable's unified cross-channel approach and faster implementation",
+                "\"Braze is more established\" → Focus on modern architecture advantages and customer satisfaction scores"
+            ],
+            "Klaviyo": [
+                "\"Klaviyo knows e-commerce better\" → Emphasize enterprise scalability and cross-industry expertise", 
+                "\"Klaviyo pricing is more predictable\" → Show total cost of ownership including growth limitations"
+            ],
+            "Salesforce Marketing Cloud": [
+                "\"SFMC integrates with our existing Salesforce\" → Highlight ease of use and faster time to value",
+                "\"SFMC is the enterprise standard\" → Focus on modern architecture and user adoption rates"
+            ],
+            "Mailchimp": [
+                "\"Mailchimp is much cheaper\" → Position enterprise capabilities and ROI at scale",
+                "\"Mailchimp is easier to use\" → Show advanced features that drive better results"
+            ],
+            "SendGrid/Twilio Engage": [
+                "\"We already use Twilio for communications\" → Emphasize marketing-first platform approach",
+                "\"SendGrid handles our transactional emails\" → Show lifecycle marketing vs. transactional focus"
+            ],
+            "HubSpot": [
+                "\"HubSpot gives us everything in one platform\" → Focus on best-of-breed engagement specialization",
+                "\"HubSpot CRM integration is seamless\" → Highlight data flexibility and activation capabilities"
+            ],
+            "Adobe Campaign": [
+                "\"Adobe integrates with our existing Adobe stack\" → Emphasize modern platform speed and usability",
+                "\"Adobe Campaign is proven at enterprise scale\" → Focus on implementation speed and user experience"
+            ]
+        }
+        
+        competitor_objections = objections.get(primary_competitor, [])
+        for objection in competitor_objections:
+            st.markdown(f"• {objection}")
+        
+        st.caption("*Always acknowledge the competitor's strengths professionally, then redirect to customer fit and business outcomes.*")
 col1, col2 = st.columns(2)
 
 with col1:
@@ -554,6 +798,7 @@ with col1:
         # Clear other AI responses
         st.session_state.journey_optimization = ""
         st.session_state.ab_test_strategy = ""
+        st.session_state.competitive_strategy = ""
         
         with st.spinner("Generating campaign suggestions..."):
             try:
@@ -602,6 +847,7 @@ with col2:
         # Clear other AI responses
         st.session_state.campaign_suggestion = ""
         st.session_state.ab_test_strategy = ""
+        st.session_state.competitive_strategy = ""
         
         with st.spinner("Analyzing journey optimization..."):
             try:
