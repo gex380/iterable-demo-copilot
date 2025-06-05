@@ -48,6 +48,9 @@ with st.expander("Why Iterable is Your Marketing Command Center", expanded=False
             "No unified customer view",
             "Time-consuming campaign setup",
             "Poor cross-channel attribution"
+        ], default=["Data silos between tools", "Manual campaign coordination"])",
+            "Time-consuming campaign setup",
+            "Poor cross-channel attribution"
         ], default=["Data silos between tools", "Manual campaign coordination"])
         
     with col2:
