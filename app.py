@@ -12,7 +12,7 @@ persona = st.sidebar.selectbox("Choose a Persona:", persona_list)
 
 # --- Mermaid.js Journey Maps ---
 journey_flows = {
-    "GlowSkin": '''
+    "GlowSkin": """
         flowchart TD
             Start([User Adds Items to Cart])
             Wait1[Wait 2 Hours]
