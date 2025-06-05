@@ -10,94 +10,132 @@ st.title("Iterable Demo Copilot")
 persona_list = ["GlowSkin", "PulseFit", "JetQuest", "LeadSync"]
 persona = st.sidebar.selectbox("Choose a Persona:", persona_list)
 
-# --- Mermaid.js Journey Maps ---
+# --- Event Selector ---
+event_options = {
+    "GlowSkin": ["Cart Abandoned", "Email Opened", "Push Ignored"],
+    "PulseFit": ["User Inactive", "Push Sent", "Email Unopened"],
+    "JetQuest": ["Browsed Flight", "No Booking", "Retargeting Ad"],
+    "LeadSync": ["Trial Started", "No Setup", "No Engagement"]
+}
+selected_event = st.selectbox("Simulate User Event:", event_options.get(persona, []))
+
+# --- Event Highlight Mapping ---
+event_to_node_map = {
+    "GlowSkin": {
+        "Cart Abandoned": "E",
+        "Email Opened": "H",
+        "Push Ignored": "K"
+    },
+    "PulseFit": {
+        "User Inactive": "E",
+        "Push Sent": "E",
+        "Email Unopened": "H"
+    },
+    "JetQuest": {
+        "Browsed Flight": "A",
+        "No Booking": "F",
+        "Retargeting Ad": "K"
+    },
+    "LeadSync": {
+        "Trial Started": "A",
+        "No Setup": "E",
+        "No Engagement": "H"
+    }
+}
+
+highlight_node = event_to_node_map.get(persona, {}).get(selected_event, "")
+highlight_class = "classDef highlight fill=#ffcc00;"
+highlight_command = f"class {highlight_node} highlight;" if highlight_node else ""
+
+# --- Journey Definitions with Highlight Support ---
 journey_flows = {
-    "GlowSkin": '''graph TD
+    "GlowSkin": f'''graph TD
     A[User Adds Items to Cart] --> B[Wait 2 Hours]
-    B --> C{Has User Purchased?}
+    B --> C{{Has User Purchased?}}
     C -->|Yes| D[Exit: Purchase Completed]
     C -->|No| E[Send SMS: You left something behind]
     E --> F[Wait 4 Hours]
-    F --> G{Has User Purchased?}
+    F --> G{{Has User Purchased?}}
     G -->|Yes| D
     G -->|No| H[Send Email: Still want that glow? 10% off]
     H --> I[Wait 2 Days]
-    I --> J{Has User Purchased?}
+    I --> J{{Has User Purchased?}}
     J -->|Yes| D
     J -->|No| K[Send Push: Your GlowKit is waiting]
-    K --> L[Exit: No Response After 3 Touches]''',
-    
-    "PulseFit": '''graph TD
+    K --> L[Exit: No Response After 3 Touches]
+    {highlight_class}
+    {highlight_command}
+    ''',
+    "PulseFit": f'''graph TD
     A[User Signs Up for App] --> B[Wait 24 Hours]
-    B --> C{User Active in App?}
+    B --> C{{User Active in App?}}
     C -->|Yes| D[Exit: User Engaged]
     C -->|No| E[Send Push: Ready to crush your fitness goals?]
     E --> F[Wait 3 Days]
-    F --> G{User Active in App?}
+    F --> G{{User Active in App?}}
     G -->|Yes| D
     G -->|No| H[Send Email: 5 Quick Workouts to Get Started]
     H --> I[Wait 1 Week]
-    I --> J{User Active in App?}
+    I --> J{{User Active in App?}}
     J -->|Yes| D
     J -->|No| K[Send SMS: Get 30% off premium]
-    K --> L[Exit: User Remains Inactive]''',
-    
-    "JetQuest": '''graph TD
+    K --> L[Exit: User Remains Inactive]
+    {highlight_class}
+    {highlight_command}
+    ''',
+    "JetQuest": f'''graph TD
     A[User Browses Flight Deals] --> B[Wait 1 Hour]
-    B --> C{User Booked Flight?}
+    B --> C{{User Booked Flight?}}
     C -->|Yes| D[Exit: Booking Completed]
     C -->|No| E[Send Email: Your flight deal expires soon]
     E --> F[Wait 6 Hours]
-    F --> G{User Booked Flight?}
+    F --> G{{User Booked Flight?}}
     G -->|Yes| D
     G -->|No| H[Send SMS: Last chance - save $200]
     H --> I[Wait 1 Day]
-    I --> J{User Booked Flight?}
+    I --> J{{User Booked Flight?}}
     J -->|Yes| D
     J -->|No| K[Send Retargeting Ad: Similar destinations]
-    K --> L[Exit: Deal Expired]''',
-    
-    "LeadSync": '''graph TD
+    K --> L[Exit: Deal Expired]
+    {highlight_class}
+    {highlight_command}
+    ''',
+    "LeadSync": f'''graph TD
     A[User Starts Free Trial] --> B[Wait 2 Days]
-    B --> C{User Setup Complete?}
+    B --> C{{User Setup Complete?}}
     C -->|Yes| D[Exit: Trial Converted]
     C -->|No| E[Send Email: Complete your setup in 5 minutes]
     E --> F[Wait 3 Days]
-    F --> G{User Active in Trial?}
+    F --> G{{User Active in Trial?}}
     G -->|Yes| D
     G -->|No| H[Send In-App: Need help? Quick guide]
     H --> I[Wait 1 Week]
-    I --> J{User Engaged?}
+    I --> J{{User Engaged?}}
     J -->|Yes| D
     J -->|No| K[Alert CSM: High-value prospect needs attention]
-    K --> L[Exit: Trial Expired]'''
+    K --> L[Exit: Trial Expired]
+    {highlight_class}
+    {highlight_command}
+    '''
 }
 
 # --- Mermaid Renderer ---
 st.subheader(f"Customer Journey: {persona}")
 
-# Create HTML with Mermaid diagram
 mermaid_html = f"""
 <!DOCTYPE html>
-<html lang="en">
+<html lang=\"en\">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://unpkg.com/mermaid@9.4.3/dist/mermaid.min.js"></script>
+    <meta charset=\"UTF-8\">
+    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+    <script src=\"https://unpkg.com/mermaid@9.4.3/dist/mermaid.min.js\"></script>
     <style>
-        body {{
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #ffffff;
-        }}
-        .mermaid {{
-            text-align: center;
-        }}
+        body {{ font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #ffffff; }}
+        .mermaid {{ text-align: center; }}
     </style>
 </head>
 <body>
-    <div class="mermaid">
+    <div class=\"mermaid\">
 {journey_flows[persona]}
     </div>
     <script>
@@ -105,11 +143,7 @@ mermaid_html = f"""
             startOnLoad: true,
             theme: 'default',
             securityLevel: 'loose',
-            flowchart: {{
-                useMaxWidth: true,
-                htmlLabels: true,
-                curve: 'basis'
-            }}
+            flowchart: {{ useMaxWidth: true, htmlLabels: true, curve: 'basis' }}
         }});
     </script>
 </body>
@@ -132,9 +166,8 @@ st.markdown(f"**Use Case Summary:** {summaries.get(persona, 'N/A')}")
 if st.button("Ask AI for Campaign Suggestions"):
     with st.spinner("Generating AI suggestions..."):
         try:
-            # Updated OpenAI client initialization
             client = openai.OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
-            
+
             prompt = f"""
 You are a senior marketing strategist. Based on the customer journey below for the persona '{persona}', suggest improvements for engagement, timing, or conversion. Include subject lines, SMS copy, push notification ideas, and any relevant A/B testing strategies.
 
@@ -143,7 +176,7 @@ Journey Summary:
 
 Be concise and strategic. Break your response into clearly labeled sections.
             """
-            
+
             response = client.chat.completions.create(
                 model="gpt-4",
                 messages=[
@@ -153,11 +186,11 @@ Be concise and strategic. Break your response into clearly labeled sections.
                 temperature=0.7,
                 max_tokens=500
             )
-            
+
             suggestions = response.choices[0].message.content
             st.markdown("### AI Campaign Suggestions")
             st.markdown(suggestions)
-            
+
         except Exception as e:
             st.error(f"Error generating AI suggestions: {str(e)}")
             st.info("Please check your OpenAI API key configuration in Streamlit secrets.")
