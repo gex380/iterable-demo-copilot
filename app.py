@@ -46,7 +46,7 @@ if persona != st.session_state.current_persona:
     st.session_state.current_persona = persona
     st.session_state.event_timeline = []
     st.session_state.next_node_id = ""
-    st.session_state.campaign_suggestion = ""
+    st.session_state.event_suggestion = ""
     st.session_state.journey_optimization = ""
     st.session_state.ab_test_strategy = ""
     st.session_state.business_impact = ""
@@ -82,8 +82,8 @@ if "event_timeline" not in st.session_state:
     st.session_state.event_timeline = []
 if "next_node_id" not in st.session_state:
     st.session_state.next_node_id = ""
-if "campaign_suggestion" not in st.session_state:
-    st.session_state.campaign_suggestion = ""
+if "event_suggestion" not in st.session_state:
+    st.session_state.event_suggestion = ""
 if "journey_optimization" not in st.session_state:
     st.session_state.journey_optimization = ""
 if "ab_test_strategy" not in st.session_state:
@@ -98,7 +98,7 @@ if st.button("Add Event to Timeline"):
 if st.button("Reset Timeline"):
     st.session_state.event_timeline = []
     st.session_state.next_node_id = ""
-    st.session_state.campaign_suggestion = ""
+    st.session_state.event_suggestion = ""
     st.session_state.journey_optimization = ""
     st.session_state.ab_test_strategy = ""
     st.session_state.business_impact = ""
@@ -327,7 +327,7 @@ with st.expander("A/B Test Setup & Analysis", expanded=False):
 
     if st.button("Generate A/B Test Strategy"):
         # Clear other AI responses
-        st.session_state.campaign_suggestion = ""
+        st.session_state.event_suggestion = ""
         st.session_state.journey_optimization = ""
         
         with st.spinner("Generating AI-powered test strategy..."):
@@ -443,7 +443,7 @@ with st.expander("Why Iterable is Your Marketing Command Center", expanded=False
     if data_sources and activation_channels and current_challenges:
         if st.button("Calculate Iterable's Business Impact"):
             # Clear other AI responses  
-            st.session_state.campaign_suggestion = ""
+            st.session_state.event_suggestion = ""
             st.session_state.journey_optimization = ""
             st.session_state.ab_test_strategy = ""
             
@@ -823,15 +823,7 @@ Focus on practical, actionable insights that would improve conversion rates and 
                 st.error(f"Error generating journey optimization: {str(e)}")
                 st.info("Please check your OpenAI API key configuration in Streamlit secrets.")
 
-# --- Display AI Responses ---
-if st.session_state.campaign_suggestion:
-    st.success("**Campaign Suggestion:**")
-    st.markdown(st.session_state.campaign_suggestion)
-
-if st.session_state.journey_optimization:
-    st.success("**Journey Optimization:**")
-    st.markdown(st.session_state.journey_optimization)
-
+# --- Display Remaining AI Responses ---
 if st.session_state.ab_test_strategy:
     st.success("**A/B Test Strategy:**")
     st.markdown(st.session_state.ab_test_strategy)
