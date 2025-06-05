@@ -19,6 +19,23 @@ event_options = {
 }
 selected_event = st.selectbox("Simulate User Event:", event_options.get(persona, []))
 
+# --- Timeline Tracking ---
+if "event_timeline" not in st.session_state:
+    st.session_state.event_timeline = []
+
+if st.button("Add Event to Timeline"):
+    if selected_event not in st.session_state.event_timeline:
+        st.session_state.event_timeline.append(selected_event)
+
+if st.button("Reset Timeline"):
+    st.session_state.event_timeline = []
+
+if st.session_state.event_timeline:
+    st.markdown("### Simulated Event Timeline")
+    st.write(" → ".join(st.session_state.event_timeline))
+else:
+    st.markdown("_No events in timeline yet._")
+
 # --- Event Highlight Mapping ---
 event_to_node_map = {
     "GlowSkin": {
@@ -123,33 +140,31 @@ def get_journey_flow(persona_name, highlight_class_def, highlight_command_def):
 
 # --- Mermaid Renderer ---
 st.subheader(f"Customer Journey: {persona}")
-
-# Get the current journey flow
 current_flow = get_journey_flow(persona, highlight_class, highlight_command)
 
-mermaid_html = """
+mermaid_html = f"""
 <!DOCTYPE html>
-<html lang="en">
+<html lang=\"en\">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://unpkg.com/mermaid@9.4.3/dist/mermaid.min.js"></script>
+    <meta charset=\"UTF-8\">
+    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+    <script src=\"https://unpkg.com/mermaid@9.4.3/dist/mermaid.min.js\"></script>
     <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #ffffff; }
-        .mermaid { text-align: center; }
+        body {{ font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #ffffff; }}
+        .mermaid {{ text-align: center; }}
     </style>
 </head>
 <body>
-    <div class="mermaid">
-""" + current_flow + """
+    <div class=\"mermaid\">
+{current_flow}
     </div>
     <script>
-        mermaid.initialize({
+        mermaid.initialize({{
             startOnLoad: true,
             theme: 'default',
             securityLevel: 'loose',
-            flowchart: { useMaxWidth: true, htmlLabels: true, curve: 'basis' }
-        });
+            flowchart: {{ useMaxWidth: true, htmlLabels: true, curve: 'basis' }}
+        }});
     </script>
 </body>
 </html>
@@ -176,16 +191,19 @@ if st.button("Ask AI for Campaign Suggestions"):
     with st.spinner("Generating AI suggestions..."):
         try:
             client = openai.OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+            timeline = st.session_state.event_timeline
+            event_history = ", ".join(timeline) if timeline else "No events simulated."
 
             prompt = f"""
-You are a senior marketing strategist. Based on the customer journey below for the persona '{persona}', suggest improvements for engagement, timing, or conversion. Include subject lines, SMS copy, push notification ideas, and any relevant A/B testing strategies.
+You are a senior marketing strategist. Based on the customer journey below for the persona '{persona}', suggest the best next campaign action based on this event timeline.
 
-Journey Summary:
+Persona Summary:
 {summaries.get(persona, '')}
 
-Current Event Being Simulated: {selected_event}
+Event Timeline:
+{event_history}
 
-Be concise and strategic. Break your response into clearly labeled sections.
+Suggest specific next steps, including optimal channel, timing, and messaging. Format your answer with bold headers and bullet points.
             """
 
             response = client.chat.completions.create(
