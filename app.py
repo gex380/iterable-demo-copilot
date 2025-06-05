@@ -7,6 +7,26 @@ import re
 st.set_page_config(page_title="Iterable Demo Copilot", layout="wide")
 st.title("Iterable Demo Copilot")
 
+# --- Onboarding Guide ---
+with st.expander("📘 How to Use This Demo", expanded=True):
+    st.markdown("""
+**Welcome to the Iterable Demo Copilot.**  
+This tool simulates how a Solutions Consultant at Iterable might demonstrate customer journeys and real-time campaign recommendations using AI.
+
+### How to use this app:
+1. **Select a persona** from the sidebar. Each persona represents a fictional customer scenario.
+2. **Choose an event** to simulate user behavior (e.g., cart abandonment).
+3. Click **'Add Event to Timeline'** to build up a sequence of events.
+4. View the **journey diagram**, which highlights key touchpoints and stages.
+5. Click **'Ask AI for Campaign Suggestions'** to receive:
+   - A recommended **next campaign action**
+   - The **node** in the journey it corresponds to
+   - A strategic explanation for why it's the best next step
+6. The recommended node will be **highlighted in yellow**.
+
+You can reset the timeline at any time, or experiment with different personas and user behaviors.
+    """)
+
 # --- Persona Selector ---
 persona_list = ["GlowSkin", "PulseFit", "JetQuest", "LeadSync"]
 persona = st.sidebar.selectbox("Choose a Persona:", persona_list)
@@ -135,18 +155,18 @@ current_flow = get_journey_flow(persona, highlight_class, highlight_command)
 
 mermaid_html = f"""
 <!DOCTYPE html>
-<html lang=\"en\">
+<html lang="en">
 <head>
-    <meta charset=\"UTF-8\">
-    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
-    <script src=\"https://unpkg.com/mermaid@9.4.3/dist/mermaid.min.js\"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/mermaid@9.4.3/dist/mermaid.min.js"></script>
     <style>
         body {{ font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #ffffff; }}
         .mermaid {{ text-align: center; }}
     </style>
 </head>
 <body>
-    <div class=\"mermaid\">
+    <div class="mermaid">
 {current_flow}
     </div>
     <script>
@@ -172,6 +192,16 @@ summaries = {
 }
 
 st.markdown(f"**Use Case Summary:** {summaries.get(persona, 'N/A')}")
+
+st.markdown("### What You're Seeing")
+st.info("""
+The diagram above is a dynamic visualization of the current customer journey for your selected persona.  
+Highlighted nodes represent:
+- Events you've simulated  
+- Or AI-recommended next steps based on past behavior
+
+Use the AI suggestions to understand optimal engagement points in the journey.
+""")
 
 # --- Event Status Display ---
 if highlight_node:
@@ -216,7 +246,7 @@ Reason: <Short explanation>
             suggestions = response.choices[0].message.content
 
             # Extract recommended node from GPT response
-            match_node = re.search(r"Node:\s*(\\w+)", suggestions)
+            match_node = re.search(r"Node:\s*(\w+)", suggestions)
             match_reason = re.search(r"Reason:\s*(.*)", suggestions)
 
             if match_node:
@@ -226,6 +256,7 @@ Reason: <Short explanation>
 
             st.markdown("### AI Campaign Suggestion Response")
             st.markdown(suggestions)
+            st.experimental_rerun()
 
         except Exception as e:
             st.error(f"Error generating AI suggestions: {str(e)}")
