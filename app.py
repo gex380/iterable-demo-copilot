@@ -1,6 +1,7 @@
 import streamlit as st
 import streamlit.components.v1 as components
 import openai
+import re
 
 # --- Page Configuration ---
 st.set_page_config(page_title="Iterable Demo Copilot", layout="wide")
@@ -22,6 +23,10 @@ selected_event = st.selectbox("Simulate User Event:", event_options.get(persona,
 # --- Timeline Tracking ---
 if "event_timeline" not in st.session_state:
     st.session_state.event_timeline = []
+if "next_node_id" not in st.session_state:
+    st.session_state.next_node_id = ""
+if "next_node_reason" not in st.session_state:
+    st.session_state.next_node_reason = ""
 
 if st.button("Add Event to Timeline"):
     if selected_event not in st.session_state.event_timeline:
@@ -29,6 +34,8 @@ if st.button("Add Event to Timeline"):
 
 if st.button("Reset Timeline"):
     st.session_state.event_timeline = []
+    st.session_state.next_node_id = ""
+    st.session_state.next_node_reason = ""
 
 if st.session_state.event_timeline:
     st.markdown("### Simulated Event Timeline")
@@ -38,29 +45,13 @@ else:
 
 # --- Event Highlight Mapping ---
 event_to_node_map = {
-    "GlowSkin": {
-        "Cart Abandoned": "E",
-        "Email Opened": "H",
-        "Push Ignored": "K"
-    },
-    "PulseFit": {
-        "User Inactive": "E",
-        "Push Sent": "E",
-        "Email Unopened": "H"
-    },
-    "JetQuest": {
-        "Browsed Flight": "A",
-        "No Booking": "F",
-        "Retargeting Ad": "K"
-    },
-    "LeadSync": {
-        "Trial Started": "A",
-        "No Setup": "E",
-        "No Engagement": "H"
-    }
+    "GlowSkin": {"Cart Abandoned": "E", "Email Opened": "H", "Push Ignored": "K"},
+    "PulseFit": {"User Inactive": "E", "Push Sent": "E", "Email Unopened": "H"},
+    "JetQuest": {"Browsed Flight": "A", "No Booking": "F", "Retargeting Ad": "K"},
+    "LeadSync": {"Trial Started": "A", "No Setup": "E", "No Engagement": "H"}
 }
 
-highlight_node = event_to_node_map.get(persona, {}).get(selected_event, "")
+highlight_node = st.session_state.next_node_id or event_to_node_map.get(persona, {}).get(selected_event, "")
 highlight_class = "classDef highlight fill:#ffcc00;"
 highlight_command = f"class {highlight_node} highlight;" if highlight_node else ""
 
@@ -185,6 +176,9 @@ st.markdown(f"**Use Case Summary:** {summaries.get(persona, 'N/A')}")
 # --- Event Status Display ---
 if highlight_node:
     st.info(f"🎯 **Event Simulation:** {selected_event} - Highlighting node {highlight_node} in the journey")
+if st.session_state.next_node_id:
+    st.success(f"💡 **AI Recommendation:** Highlighting node {st.session_state.next_node_id} as the next step")
+    st.markdown(f"**Reasoning:** {st.session_state.next_node_reason}")
 
 # --- GPT Integration: AI Suggestions ---
 if st.button("Ask AI for Campaign Suggestions"):
@@ -195,15 +189,18 @@ if st.button("Ask AI for Campaign Suggestions"):
             event_history = ", ".join(timeline) if timeline else "No events simulated."
 
             prompt = f"""
-You are a senior marketing strategist. Based on the customer journey below for the persona '{persona}', suggest the best next campaign action based on this event timeline.
-
-Persona Summary:
-{summaries.get(persona, '')}
-
-Event Timeline:
+You are a senior marketing strategist. Based on the customer journey for persona '{persona}', and the following event timeline:
 {event_history}
 
-Suggest specific next steps, including optimal channel, timing, and messaging. Format your answer with bold headers and bullet points.
+Suggest the next best step in the journey. Provide:
+1. The **node ID** (e.g. H)
+2. The **action/label** (e.g. Send Email: Offer 10% off)
+3. A **brief explanation** (why this is the right step)
+
+Format:
+Node: <ID>
+Action: <Label>
+Reason: <Short explanation>
             """
 
             response = client.chat.completions.create(
@@ -217,7 +214,17 @@ Suggest specific next steps, including optimal channel, timing, and messaging. F
             )
 
             suggestions = response.choices[0].message.content
-            st.markdown("### AI Campaign Suggestions")
+
+            # Extract recommended node from GPT response
+            match_node = re.search(r"Node:\s*(\\w+)", suggestions)
+            match_reason = re.search(r"Reason:\s*(.*)", suggestions)
+
+            if match_node:
+                st.session_state.next_node_id = match_node.group(1)
+            if match_reason:
+                st.session_state.next_node_reason = match_reason.group(1)
+
+            st.markdown("### AI Campaign Suggestion Response")
             st.markdown(suggestions)
 
         except Exception as e:
