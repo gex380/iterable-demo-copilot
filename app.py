@@ -265,6 +265,8 @@ Highlighted nodes represent:
 Use the AI suggestions to understand optimal engagement points in the journey.
 """)
 
+st.info("💡 **Key Insight**: Notice how Iterable creates a unified customer experience by coordinating all your existing tools, rather than replacing them.")
+
 # --- Event Status Display ---
 if highlight_node:
     st.info(f"**Event Simulation:** {selected_event} - Highlighted in journey diagram")
@@ -591,14 +593,6 @@ with st.expander("Strategic Competitive Positioning", expanded=False):
             "Mobile-first approach",
             "Enterprise security/compliance"
         ], default=["Cross-channel orchestration", "Ease of implementation"])
-        
-        decision_makers = st.multiselect("Key Stakeholders:", [
-            "Marketing Operations",
-            "IT/Engineering", 
-            "CMO/Marketing Leadership",
-            "Procurement/Finance",
-            "Data/Analytics Team"
-        ], default=["Marketing Operations", "CMO/Marketing Leadership"])
 
     # Competitive Comparison Matrix
     if primary_competitor and key_priorities:
@@ -700,6 +694,19 @@ with st.expander("Strategic Competitive Positioning", expanded=False):
                     if priority in competitor_challenges[primary_competitor]:
                         competitor_content += f"**{priority}:**\n• {competitor_challenges[primary_competitor][priority]}\n\n"
                 
+                # Add additional context based on competitor
+                additional_context = {
+                    "Braze": "• Complex technical setup requiring developer resources\n• Steep learning curve for marketing teams\n• Hidden implementation costs and ongoing maintenance overhead",
+                    "Klaviyo": "• Limited enterprise features and scalability constraints\n• E-commerce focus limits cross-industry applicability\n• Rapid cost escalation as usage grows beyond SMB levels",
+                    "Salesforce Marketing Cloud": "• Requires extensive consultant support and training\n• Module-based architecture creates feature silos\n• Legacy architecture impacts performance and user experience",
+                    "Mailchimp": "• Basic automation capabilities insufficient for enterprise needs\n• Limited data flexibility and advanced segmentation options\n• Template-driven approach restricts personalization depth",
+                    "SendGrid/Twilio Engage": "• Developer-first platform requires technical expertise\n• Limited marketing-specific features and journey capabilities\n• API complexity creates barriers for marketing team adoption",
+                    "HubSpot": "• All-in-one approach creates feature limitations\n• CRM-centric design constrains marketing flexibility\n• Generic automation lacks specialized engagement capabilities",
+                    "Adobe Campaign": "• Legacy platform with outdated user interface\n• Complex implementation requiring specialized consultants\n• Batch processing limitations impact real-time capabilities"
+                }
+                
+                competitor_content += f"\n**Additional Challenges:**\n{additional_context.get(primary_competitor, '')}"
+                
                 st.error(competitor_content if competitor_content else f"{primary_competitor} approach has limitations in your priority areas.")
             
             with col2:
@@ -709,22 +716,14 @@ with st.expander("Strategic Competitive Positioning", expanded=False):
                     if priority in iterable_advantages:
                         iterable_content += f"**{priority}:**\n• {iterable_advantages[priority]}\n\n"
                 
+                # Add additional Iterable advantages
+                iterable_context = {
+                    "general": "• Modern cloud-native architecture built for marketing teams\n• Self-service platform requiring minimal technical resources\n• Unified customer data model across all touchpoints\n• Real-time decisioning and instant campaign updates\n• Drag-and-drop workflow builder with visual journey mapping\n• Comprehensive analytics and attribution across all channels"
+                }
+                
+                iterable_content += f"\n**Platform Advantages:**\n{iterable_context['general']}"
+                
                 st.success(iterable_content if iterable_content else "Iterable addresses your key priorities with modern platform capabilities.")
-            
-            # Determine key differentiator based on priorities
-            key_differentiators = {
-                "Ease of implementation": "Speed to Value & User Experience",
-                "Advanced personalization": "Real-Time Intelligence & Flexibility", 
-                "Cross-channel orchestration": "Native Omnichannel Architecture",
-                "Pricing/ROI": "Transparent & Predictable Economics",
-                "Scalability": "Cloud-Native Performance & Reliability",
-                "Integration capabilities": "Data Flexibility & Real-Time Activation",
-                "Mobile-first approach": "Unified Mobile Strategy",
-                "Enterprise security/compliance": "Built-In Governance & Security"
-            }
-            
-            primary_differentiator = key_differentiators.get(key_priorities[0], "Modern Platform Approach") if key_priorities else "Modern Platform Approach"
-            st.info(f"**Key Differentiator for Your Priorities:** {primary_differentiator}")
 
     # Display competitive strategy
     if hasattr(st.session_state, 'competitive_strategy') and st.session_state.competitive_strategy:
