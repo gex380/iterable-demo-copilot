@@ -2,6 +2,7 @@ import streamlit as st
 import streamlit.components.v1 as components
 import openai
 import re
+import math
 
 # --- Page Configuration ---
 st.set_page_config(page_title="Iterable Demo Copilot", layout="wide")
@@ -312,7 +313,6 @@ with st.expander("A/B Test Setup & Analysis", expanded=False):
         lift_rate = (current_metric + expected_lift) / 100
         
         # Simplified statistical calculation
-        import math
         z_score = {"90%": 1.645, "95%": 1.96, "99%": 2.576}[confidence_level]
         pooled_rate = (base_rate + lift_rate) / 2
         sample_size = int((2 * pooled_rate * (1 - pooled_rate) * (z_score / (lift_rate - base_rate))**2))
@@ -333,7 +333,6 @@ with st.expander("A/B Test Setup & Analysis", expanded=False):
         st.session_state.campaign_suggestion = ""
         st.session_state.journey_optimization = ""
         st.session_state.integration_analysis = ""
-        st.session_state.business_impact = ""
         
         with st.spinner("Generating AI-powered test strategy..."):
             try:
@@ -428,8 +427,8 @@ with st.expander("Why Iterable is Your Marketing Command Center", expanded=False
         ], default=["Data silos between tools", "Manual campaign coordination"])
         
     with col2:
-        st.markdown("**Iterable's Impact**")
-        activation_channels = st.multiselect("Channels to Orchestrate:", [
+        st.markdown("**Channels to Orchestrate**")
+        activation_channels = st.multiselect("Target Channels:", [
             "Email",
             "SMS", 
             "Push Notifications",
@@ -438,14 +437,61 @@ with st.expander("Why Iterable is Your Marketing Command Center", expanded=False
             "Webhooks to External Systems"
         ], default=["Email", "SMS", "Push Notifications"])
         
-        business_outcomes = st.multiselect("Expected Business Impact:", [
-            "25-40% increase in conversion rates",
-            "50% reduction in campaign setup time",
-            "Unified customer experience",
-            "Real-time personalization",
-            "Automated lifecycle campaigns",
-            "Complete attribution visibility"
-        ], default=["25-40% increase in conversion rates", "50% reduction in campaign setup time"])
+        team_size = st.selectbox("Marketing Team Size:", [
+            "Small (1-5 people)",
+            "Medium (6-15 people)", 
+            "Large (16+ people)"
+        ], index=1)
+
+    # Dynamic Business Impact Calculator
+    if data_sources and activation_channels and current_challenges:
+        if st.button("Calculate Iterable's Business Impact"):
+            with st.spinner("Calculating personalized business impact..."):
+                try:
+                    client = openai.OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+                    
+                    prompt = f"""
+You are an Iterable ROI analyst. Based on this prospect's current situation, calculate specific, quantified business impact:
+
+**Current State:**
+- Tech Stack: {', '.join(data_sources)}
+- Challenges: {', '.join(current_challenges)}
+- Channels: {', '.join(activation_channels)}
+- Team Size: {team_size}
+- Persona Focus: {persona}
+
+**Calculate specific business impact metrics:**
+1. **Conversion Rate Improvement** - Based on their channels and persona type
+2. **Time Savings** - Hours saved per week from automation
+3. **Revenue Impact** - Annual revenue increase estimate
+4. **Campaign Efficiency** - Reduction in setup time and manual work
+5. **Customer Experience Score** - Improvement in unified experience
+
+Provide specific percentages and dollar amounts where possible. Make it realistic but compelling.
+
+Format as a brief, scannable list with numbers.
+                    """
+
+                    response = client.chat.completions.create(
+                        model="gpt-4",
+                        messages=[
+                            {"role": "system", "content": "You are an ROI analyst specializing in MarTech transformation impact calculations."},
+                            {"role": "user", "content": prompt}
+                        ],
+                        temperature=0.7,
+                        max_tokens=400
+                    )
+
+                    st.session_state.business_impact = response.choices[0].message.content
+                    st.rerun()
+
+                except Exception as e:
+                    st.error(f"Error calculating business impact: {str(e)}")
+
+    # Display calculated business impact
+    if hasattr(st.session_state, 'business_impact') and st.session_state.business_impact:
+        st.markdown("**Calculated Business Impact:**")
+        st.info(st.session_state.business_impact)
 
     if st.button("Generate Iterable ROI Assessment"):
         # Clear other AI responses
@@ -465,7 +511,7 @@ You are an Iterable solutions architect presenting to a prospective enterprise c
 - Current Tools: {', '.join(data_sources)}
 - Current Challenges: {', '.join(current_challenges)}
 - Target Channels: {', '.join(activation_channels)}
-- Expected Outcomes: {', '.join(business_outcomes)}
+- Team Size: {team_size}
 - Customer Journey Context: {', '.join(st.session_state.event_timeline) if st.session_state.event_timeline else 'Standard journey'}
 
 **Focus on Iterable's Competitive Advantages:**
@@ -502,31 +548,56 @@ Make this sound like a compelling business case that would convince a CMO to inv
             except Exception as e:
                 st.error(f"Error generating ROI assessment: {str(e)}")
 
-    # Iterable Value Proposition Visualization
+    # Enhanced Iterable Value Proposition Visualization
     if data_sources and activation_channels:
+        st.markdown("---")
         st.markdown("**Iterable's Orchestration Impact**")
         
-        # Show before/after comparison
-        before_after = f"""
-BEFORE ITERABLE (Disconnected):
-{' + '.join(data_sources)} → Manual Processes → {' + '.join(activation_channels)}
-❌ Data silos
-❌ Manual coordination  
-❌ Inconsistent experience
-❌ No real-time optimization
-
-AFTER ITERABLE (Orchestrated):
-{' + '.join(data_sources)} → ITERABLE ORCHESTRATION HUB → {' + '.join(activation_channels)}
-✅ Unified customer profiles
-✅ Automated cross-channel journeys
-✅ Real-time personalization  
-✅ AI-powered optimization
-✅ Complete attribution
-
-BUSINESS IMPACT: {', '.join(business_outcomes)}
-        """
+        # Create columns for before/after comparison
+        col1, col2 = st.columns(2)
         
-        st.code(before_after, language=None)
+        with col1:
+            st.markdown("**BEFORE: Disconnected Stack**")
+            st.error(f"""
+**Current State:**
+• {len(data_sources)} disconnected tools
+• Manual campaign coordination
+• Inconsistent customer experience
+• Data silos and blind spots
+
+**Problems:**
+• {len(current_challenges)} major challenges
+• Average 3-5 hour campaign setup
+• 40% lower conversion rates
+• No real-time optimization
+            """)
+        
+        with col2:
+            st.markdown("**AFTER: Iterable Orchestration**")
+            st.success(f"""
+**Unified Platform:**
+• All {len(data_sources)} tools connected
+• Automated cross-channel journeys
+• Real-time personalization across {len(activation_channels)} channels
+• Complete customer view
+
+**Results:**
+• 25-40% higher conversion rates
+• 50% faster campaign deployment
+• Unified customer experience
+• AI-powered optimization
+            """)
+        
+        # Overall impact summary
+        st.markdown("**Transformation Summary:**")
+        col1, col2, col3 = st.columns(3)
+        
+        with col1:
+            st.metric("Setup Time Reduction", "50%", "↓ 2-3 hours per campaign")
+        with col2:
+            st.metric("Conversion Rate Lift", "25-40%", "↑ Unified experience")
+        with col3:
+            st.metric("Customer Satisfaction", "+35%", "↑ Consistent messaging")
 
 # --- AI Suggestion Buttons ---
 col1, col2 = st.columns(2)
@@ -537,7 +608,6 @@ with col1:
         st.session_state.journey_optimization = ""
         st.session_state.ab_test_strategy = ""
         st.session_state.integration_analysis = ""
-        st.session_state.business_impact = ""
         
         with st.spinner("Generating campaign suggestions..."):
             try:
@@ -587,7 +657,6 @@ with col2:
         st.session_state.campaign_suggestion = ""
         st.session_state.ab_test_strategy = ""
         st.session_state.integration_analysis = ""
-        st.session_state.business_impact = ""
         
         with st.spinner("Analyzing journey optimization..."):
             try:
