@@ -1,217 +1,4 @@
-# Display AI Responses for Event & Journey Intelligence
-if st.session_state.event_suggestion:
-    st.success("**Event-Specific Recommendations:**")
-    st.markdown(st.session_state.event_suggestion)
-
-if st.session_state.journey_optimization:
-    st.success("**Journey Optimization Strategy:**")
-    st.markdown(st.session_state.journey_optimization)
-
-# --- Iterable's Cross-Channel Orchestration Hub ---
-st.markdown("---")
-st.subheader("Iterable's Cross-Channel Orchestration Hub")
-
-with st.expander("Why Iterable is Your Marketing Command Center", expanded=False):
-    st.markdown("""
-    **Transform Your Disconnected MarTech Stack into a Unified Growth Engine**  
-    
-    Most companies have 15+ marketing tools that don't talk to each other, creating data silos and missed opportunities. 
-    Iterable serves as your central orchestration layer, making every tool in your stack more effective.
-    
-    **What makes Iterable different:**
-    - **Real-time Cross-Channel Decisions**: Unlike point solutions, Iterable coordinates email, SMS, push, and in-app messages in real-time
-    - **Unified Customer Profiles**: Combines data from all sources to create a single view of each customer
-    - **Intelligent Channel Selection**: AI automatically chooses the best channel and timing for each individual
-    - **Workflow Automation**: Replace manual processes with automated, personalized customer journeys
-    """)
-    
-    # Integration Configuration
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        st.markdown("**Current MarTech Stack**")
-        data_sources = st.multiselect("Select Your Current Tools:", [
-            "Salesforce CRM",
-            "Shopify/E-commerce Platform", 
-            "Google Analytics",
-            "Customer Data Platform (CDP)",
-            "Product Analytics (Mixpanel/Amplitude)",
-            "Support System (Zendesk)",
-            "Billing System (Stripe)",
-            "Data Warehouse (Snowflake/BigQuery)"
-        ], default=["Salesforce CRM", "Shopify/E-commerce Platform"])
-        
-        current_challenges = st.multiselect("Current Challenges:", [
-            "Data silos between tools",
-            "Manual campaign coordination", 
-            "Inconsistent customer experience",
-            "No unified customer view",
-            "Time-consuming campaign setup",
-            "Poor cross-channel attribution"
-        ], default=["Data silos between tools", "Manual campaign coordination"])",
-            "Time-consuming campaign setup",
-            "Poor cross-channel attribution"
-        ], default=["Data silos between tools", "Manual campaign coordination"])
-        
-    with col2:
-        st.markdown("**Channels to Orchestrate**")
-        activation_channels = st.multiselect("Target Channels:", [
-            "Email",
-            "SMS", 
-            "Push Notifications",
-            "In-App Messages",
-            "Direct Mail",
-            "Webhooks to External Systems"
-        ], default=["Email", "SMS", "Push Notifications"])
-        
-        team_size = st.selectbox("Marketing Team Size:", [
-            "Small (1-5 people)",
-            "Medium (6-15 people)", 
-            "Large (16+ people)"
-        ], index=1)
-
-    # Dynamic Business Impact Calculator
-    if data_sources and activation_channels and current_challenges:
-        if st.button("Calculate Iterable's Business Impact"):
-            with st.spinner("Calculating personalized business impact..."):
-                try:
-                    client = openai.OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
-                    
-                    prompt = f"""
-You are an Iterable ROI analyst. Based on this prospect's current situation, calculate specific, quantified business impact:
-
-**Current State:**
-- Tech Stack: {', '.join(data_sources)}
-- Challenges: {', '.join(current_challenges)}
-- Channels: {', '.join(activation_channels)}
-- Team Size: {team_size}
-- Persona Focus: {persona}
-
-**Calculate specific business impact metrics:**
-1. **Conversion Rate Improvement** - Based on their channels and persona type
-2. **Time Savings** - Hours saved per week from automation
-3. **Revenue Impact** - Annual revenue increase estimate
-4. **Campaign Efficiency** - Reduction in setup time and manual work
-5. **Customer Experience Score** - Improvement in unified experience
-
-Provide specific percentages and dollar amounts where possible. Make it realistic but compelling.
-
-IMPORTANT: Format as a brief, scannable list with numbers. Use "dollars" instead of dollar signs to avoid formatting issues. Avoid using asterisks in your response.
-                    """
-
-                    response = client.chat.completions.create(
-                        model="gpt-4",
-                        messages=[
-                            {"role": "system", "content": "You are an ROI analyst specializing in MarTech transformation impact calculations."},
-                            {"role": "user", "content": prompt}
-                        ],
-                        temperature=0.7,
-                        max_tokens=400
-                    )
-
-                    st.session_state.business_impact = response.choices[0].message.content
-                    st.rerun()
-
-                except Exception as e:
-                    st.error(f"Error calculating business impact: {str(e)}")
-
-    # Display calculated business impact
-    if hasattr(st.session_state, 'business_impact') and st.session_state.business_impact:
-        st.markdown("**Calculated Business Impact:**")
-        st.info(st.session_state.business_impact)
-
-    # Enhanced Iterable Value Proposition Visualization
-    if data_sources and activation_channels:
-        st.markdown("---")
-        st.markdown("**Iterable's Orchestration Impact**")
-        
-        # Create columns for before/after comparison
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            st.markdown("**BEFORE: Disconnected Stack**")
-            st.error(f"""
-**Current State:**
-• {len(data_sources)} disconnected tools
-• Manual campaign coordination
-• Inconsistent customer experience
-• Data silos and blind spots
-
-**Problems:**
-• {len(current_challenges)} major challenges
-• Average 3-5 hour campaign setup
-• 40% lower conversion rates
-• No real-time optimization
-            """)
-        
-        with col2:
-            st.markdown("**AFTER: Iterable Orchestration**")
-            st.success(f"""
-**Unified Platform:**
-• All {len(data_sources)} tools connected
-• Automated cross-channel journeys
-• Real-time personalization across {len(activation_channels)} channels
-• Complete customer view
-
-**Results:**
-• 25-40% higher conversion rates
-• 50% faster campaign deployment
-• Unified customer experience
-• AI-powered optimization
-            """)
-        
-        # Overall impact summary
-        st.markdown("**Industry Benchmarks - Typical Iterable Impact:**")
-        st.caption("*These are average improvements seen across Iterable's customer base, not specific to your configuration above.*")
-        
-        col1, col2, col3 = st.columns(3)
-        
-        with col1:
-            st.metric("Setup Time Reduction", "50%", "2-3 hours per campaign")
-        with col2:
-            st.metric("Conversion Rate Lift", "25-40%", "Unified experience")
-        with col3:
-            st.metric("Customer Satisfaction", "+35%", "Consistent messaging")
-
-# --- Iterable's Cross-Channel Orchestration Hub ---
-st.markdown("---")
-st.subheader("Iterable's Cross-Channel Orchestration Hub")
-
-with st.expander("Why Iterable is Your Marketing Command Center", expanded=False):
-    st.markdown("""
-    **Transform Your Disconnected MarTech Stack into a Unified Growth Engine**  
-    
-    Most companies have 15+ marketing tools that don't talk to each other, creating data silos and missed opportunities. 
-    Iterable serves as your central orchestration layer, making every tool in your stack more effective.
-    
-    **What makes Iterable different:**
-    - **Real-time Cross-Channel Decisions**: Unlike point solutions, Iterable coordinates email, SMS, push, and in-app messages in real-time
-    - **Unified Customer Profiles**: Combines data from all sources to create a single view of each customer
-    - **Intelligent Channel Selection**: AI automatically chooses the best channel and timing for each individual
-    - **Workflow Automation**: Replace manual processes with automated, personalized customer journeys
-    """)
-    
-    # Integration Configuration
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        st.markdown("**Current MarTech Stack**")
-        data_sources = st.multiselect("Select Your Current Tools:", [
-            "Salesforce CRM",
-            "Shopify/E-commerce Platform", 
-            "Google Analytics",
-            "Customer Data Platform (CDP)",
-            "Product Analytics (Mixpanel/Amplitude)",
-            "Support System (Zendesk)",
-            "Billing System (Stripe)",
-            "Data Warehouse (Snowflake/BigQuery)"
-        ], default=["Salesforce CRM", "Shopify/E-commerce Platform"])
-        
-        current_challenges = st.multiselect("Current Challenges:", [
-            "Data silos between tools",
-            "Manual campaign coordination", 
-            "Inconsistent customer experience",
-            "No unified customer viewimport streamlit as st
+import streamlit as st
 import streamlit.components.v1 as components
 import openai
 import re
@@ -272,14 +59,30 @@ with st.expander("How to Use This Demo", expanded=True):
     This showcases Iterable's unique value: turning your collection of marketing tools into an intelligent, coordinated growth engine while demonstrating the strategic thinking and technical competence expected from elite Solutions Consultants.
     """)
 
+# --- Initialize Session State ---
+def initialize_session_state():
+    """Initialize all session state variables if they don't exist"""
+    default_values = {
+        'current_persona': 'GlowSkin',
+        'event_timeline': [],
+        'next_node_id': '',
+        'event_suggestion': '',
+        'journey_optimization': '',
+        'ab_test_strategy': '',
+        'business_impact': ''
+    }
+    
+    for key, default_value in default_values.items():
+        if key not in st.session_state:
+            st.session_state[key] = default_value
+
+initialize_session_state()
+
 # --- Persona Selector ---
 persona_list = ["GlowSkin", "PulseFit", "JetQuest", "LeadSync"]
 
-# Reset everything when persona changes
-if "current_persona" not in st.session_state:
-    st.session_state.current_persona = persona_list[0]
-
-persona = st.sidebar.selectbox("Choose a Persona:", persona_list)
+persona = st.sidebar.selectbox("Choose a Persona:", persona_list, 
+                              index=persona_list.index(st.session_state.current_persona) if st.session_state.current_persona in persona_list else 0)
 
 # Check if persona changed and reset if so
 if persona != st.session_state.current_persona:
@@ -315,34 +118,29 @@ event_options = {
         "Support Ticket Created", "Webinar Attended", "Case Study Downloaded", "Contract Signed"
     ]
 }
+
 selected_event = st.selectbox("Simulate User Event:", event_options.get(persona, []))
 
-# --- Timeline Tracking ---
-if "event_timeline" not in st.session_state:
-    st.session_state.event_timeline = []
-if "next_node_id" not in st.session_state:
-    st.session_state.next_node_id = ""
-if "event_suggestion" not in st.session_state:
-    st.session_state.event_suggestion = ""
-if "journey_optimization" not in st.session_state:
-    st.session_state.journey_optimization = ""
-if "ab_test_strategy" not in st.session_state:
-    st.session_state.ab_test_strategy = ""
-if "business_impact" not in st.session_state:
-    st.session_state.business_impact = ""
+# --- Timeline Management ---
+col1, col2 = st.columns(2)
 
-if st.button("Add Event to Timeline"):
-    if selected_event not in st.session_state.event_timeline:
-        st.session_state.event_timeline.append(selected_event)
+with col1:
+    if st.button("Add Event to Timeline"):
+        if selected_event and selected_event not in st.session_state.event_timeline:
+            st.session_state.event_timeline.append(selected_event)
+            st.rerun()
 
-if st.button("Reset Timeline"):
-    st.session_state.event_timeline = []
-    st.session_state.next_node_id = ""
-    st.session_state.event_suggestion = ""
-    st.session_state.journey_optimization = ""
-    st.session_state.ab_test_strategy = ""
-    st.session_state.business_impact = ""
+with col2:
+    if st.button("Reset Timeline"):
+        st.session_state.event_timeline = []
+        st.session_state.next_node_id = ""
+        st.session_state.event_suggestion = ""
+        st.session_state.journey_optimization = ""
+        st.session_state.ab_test_strategy = ""
+        st.session_state.business_impact = ""
+        st.rerun()
 
+# Display current timeline
 if st.session_state.event_timeline:
     st.markdown("### Simulated Event Timeline")
     st.write(" → ".join(st.session_state.event_timeline))
@@ -374,7 +172,7 @@ event_to_node_map = {
 }
 
 highlight_node = st.session_state.next_node_id or event_to_node_map.get(persona, {}).get(selected_event, "")
-highlight_class = "classDef highlight fill:#ffcc00;"
+highlight_class = "classDef highlight fill:#ffcc00;" if highlight_node else ""
 highlight_command = f"class {highlight_node} highlight;" if highlight_node else ""
 
 # --- Journey Definitions with Highlight Support ---
@@ -515,21 +313,52 @@ if highlight_node:
 st.markdown("---")
 st.subheader("AI-Powered Marketing Intelligence")
 
+# Check if OpenAI API key is available
+def check_openai_config():
+    try:
+        api_key = st.secrets.get("OPENAI_API_KEY", "")
+        if not api_key:
+            st.error("OpenAI API key not found in Streamlit secrets. Please configure your API key.")
+            return False
+        return True
+    except Exception as e:
+        st.error("Error accessing OpenAI configuration. Please check your Streamlit secrets.")
+        return False
+
+def make_openai_request(prompt, system_message, max_tokens=500):
+    """Make an OpenAI API request with proper error handling"""
+    try:
+        client = openai.OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",  # Updated to a more reliable model
+            messages=[
+                {"role": "system", "content": system_message},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.7,
+            max_tokens=max_tokens
+        )
+        return response.choices[0].message.content
+    except Exception as e:
+        st.error(f"Error generating AI response: {str(e)}")
+        return None
+
 col1, col2 = st.columns(2)
 
 with col1:
     if st.button("Event Suggestions", use_container_width=True):
+        if not check_openai_config():
+            st.stop()
+            
         # Clear other AI responses
         st.session_state.journey_optimization = ""
         st.session_state.ab_test_strategy = ""
         
         with st.spinner("Generating event suggestions..."):
-            try:
-                client = openai.OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
-                timeline = st.session_state.event_timeline
-                event_history = ", ".join(timeline) if timeline else "No events simulated."
+            timeline = st.session_state.event_timeline
+            event_history = ", ".join(timeline) if timeline else "No events simulated."
 
-                prompt = f"""
+            prompt = f"""
 You are a senior marketing strategist at Iterable. Based on the customer journey for persona '{persona}', and the following event timeline:
 {event_history}
 
@@ -546,38 +375,32 @@ Suggest the next best campaign action. Provide:
 3. **Expected outcome** (what you expect to happen)
 
 Format your response clearly with headers.
-                """
+            """
 
-                response = client.chat.completions.create(
-                    model="gpt-4",
-                    messages=[
-                        {"role": "system", "content": "You are a senior marketing strategist specializing in customer engagement and MarTech."},
-                        {"role": "user", "content": prompt}
-                    ],
-                    temperature=0.7,
-                    max_tokens=500
-                )
-
-                st.session_state.event_suggestion = response.choices[0].message.content
+            response = make_openai_request(
+                prompt, 
+                "You are a senior marketing strategist specializing in customer engagement and MarTech.",
+                500
+            )
+            
+            if response:
+                st.session_state.event_suggestion = response
                 st.rerun()
-
-            except Exception as e:
-                st.error(f"Error generating event suggestions: {str(e)}")
-                st.info("Please check your OpenAI API key configuration in Streamlit secrets.")
 
 with col2:
     if st.button("Journey Optimization", use_container_width=True):
+        if not check_openai_config():
+            st.stop()
+            
         # Clear other AI responses
         st.session_state.event_suggestion = ""
         st.session_state.ab_test_strategy = ""
         
         with st.spinner("Analyzing journey optimization..."):
-            try:
-                client = openai.OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
-                timeline = st.session_state.event_timeline
-                event_history = ", ".join(timeline) if timeline else "No events simulated."
+            timeline = st.session_state.event_timeline
+            event_history = ", ".join(timeline) if timeline else "No events simulated."
 
-                prompt = f"""
+            prompt = f"""
 You are a customer journey optimization expert at Iterable. Analyze the current journey for persona '{persona}' and event timeline:
 {event_history}
 
@@ -589,24 +412,17 @@ Provide strategic recommendations for:
 5. **Expected Business Impact** - Quantified improvements in conversion rates and revenue
 
 Focus on practical, actionable insights that would improve conversion rates and customer experience.
-                """
+            """
 
-                response = client.chat.completions.create(
-                    model="gpt-4",
-                    messages=[
-                        {"role": "system", "content": "You are a customer journey optimization expert specializing in lifecycle marketing and conversion optimization."},
-                        {"role": "user", "content": prompt}
-                    ],
-                    temperature=0.7,
-                    max_tokens=600
-                )
-
-                st.session_state.journey_optimization = response.choices[0].message.content
+            response = make_openai_request(
+                prompt,
+                "You are a customer journey optimization expert specializing in lifecycle marketing and conversion optimization.",
+                600
+            )
+            
+            if response:
+                st.session_state.journey_optimization = response
                 st.rerun()
-
-            except Exception as e:
-                st.error(f"Error generating journey optimization: {str(e)}")
-                st.info("Please check your OpenAI API key configuration in Streamlit secrets.")
 
 # Display AI Responses for Event & Journey Intelligence
 if st.session_state.event_suggestion:
@@ -616,6 +432,163 @@ if st.session_state.event_suggestion:
 if st.session_state.journey_optimization:
     st.success("**Journey Optimization Strategy:**")
     st.markdown(st.session_state.journey_optimization)
+
+# --- Iterable's Cross-Channel Orchestration Hub ---
+st.markdown("---")
+st.subheader("Iterable's Cross-Channel Orchestration Hub")
+
+with st.expander("Why Iterable is Your Marketing Command Center", expanded=False):
+    st.markdown("""
+    **Transform Your Disconnected MarTech Stack into a Unified Growth Engine**  
+    
+    Most companies have 15+ marketing tools that don't talk to each other, creating data silos and missed opportunities. 
+    Iterable serves as your central orchestration layer, making every tool in your stack more effective.
+    
+    **What makes Iterable different:**
+    - **Real-time Cross-Channel Decisions**: Unlike point solutions, Iterable coordinates email, SMS, push, and in-app messages in real-time
+    - **Unified Customer Profiles**: Combines data from all sources to create a single view of each customer
+    - **Intelligent Channel Selection**: AI automatically chooses the best channel and timing for each individual
+    - **Workflow Automation**: Replace manual processes with automated, personalized customer journeys
+    """)
+    
+    # Integration Configuration
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown("**Current MarTech Stack**")
+        data_sources = st.multiselect("Select Your Current Tools:", [
+            "Salesforce CRM",
+            "Shopify/E-commerce Platform", 
+            "Google Analytics",
+            "Customer Data Platform (CDP)",
+            "Product Analytics (Mixpanel/Amplitude)",
+            "Support System (Zendesk)",
+            "Billing System (Stripe)",
+            "Data Warehouse (Snowflake/BigQuery)"
+        ], default=["Salesforce CRM", "Shopify/E-commerce Platform"])
+        
+        current_challenges = st.multiselect("Current Challenges:", [
+            "Data silos between tools",
+            "Manual campaign coordination", 
+            "Inconsistent customer experience",
+            "No unified customer view",
+            "Time-consuming campaign setup",
+            "Poor cross-channel attribution"
+        ], default=["Data silos between tools", "Manual campaign coordination"])
+        
+    with col2:
+        st.markdown("**Channels to Orchestrate**")
+        activation_channels = st.multiselect("Target Channels:", [
+            "Email",
+            "SMS", 
+            "Push Notifications",
+            "In-App Messages",
+            "Direct Mail",
+            "Webhooks to External Systems"
+        ], default=["Email", "SMS", "Push Notifications"])
+        
+        team_size = st.selectbox("Marketing Team Size:", [
+            "Small (1-5 people)",
+            "Medium (6-15 people)", 
+            "Large (16+ people)"
+        ], index=1)
+
+    # Dynamic Business Impact Calculator
+    if data_sources and activation_channels and current_challenges:
+        if st.button("Calculate Iterable's Business Impact"):
+            if not check_openai_config():
+                st.stop()
+                
+            with st.spinner("Calculating personalized business impact..."):
+                prompt = f"""
+You are an Iterable ROI analyst. Based on this prospect's current situation, calculate specific, quantified business impact:
+
+**Current State:**
+- Tech Stack: {', '.join(data_sources)}
+- Challenges: {', '.join(current_challenges)}
+- Channels: {', '.join(activation_channels)}
+- Team Size: {team_size}
+- Persona Focus: {persona}
+
+**Calculate specific business impact metrics:**
+1. **Conversion Rate Improvement** - Based on their channels and persona type
+2. **Time Savings** - Hours saved per week from automation
+3. **Revenue Impact** - Annual revenue increase estimate
+4. **Campaign Efficiency** - Reduction in setup time and manual work
+5. **Customer Experience Score** - Improvement in unified experience
+
+Provide specific percentages and dollar amounts where possible. Make it realistic but compelling.
+
+IMPORTANT: Format as a brief, scannable list with numbers. Use "dollars" instead of dollar signs to avoid formatting issues. Avoid using asterisks in your response.
+                """
+
+                response = make_openai_request(
+                    prompt,
+                    "You are an ROI analyst specializing in MarTech transformation impact calculations.",
+                    400
+                )
+                
+                if response:
+                    st.session_state.business_impact = response
+                    st.rerun()
+
+    # Display calculated business impact
+    if st.session_state.business_impact:
+        st.markdown("**Calculated Business Impact:**")
+        st.info(st.session_state.business_impact)
+
+    # Enhanced Iterable Value Proposition Visualization
+    if data_sources and activation_channels:
+        st.markdown("---")
+        st.markdown("**Iterable's Orchestration Impact**")
+        
+        # Create columns for before/after comparison
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown("**BEFORE: Disconnected Stack**")
+            st.error(f"""
+**Current State:**
+• {len(data_sources)} disconnected tools
+• Manual campaign coordination
+• Inconsistent customer experience
+• Data silos and blind spots
+
+**Problems:**
+• {len(current_challenges)} major challenges
+• Average 3-5 hour campaign setup
+• 40% lower conversion rates
+• No real-time optimization
+            """)
+        
+        with col2:
+            st.markdown("**AFTER: Iterable Orchestration**")
+            st.success(f"""
+**Unified Platform:**
+• All {len(data_sources)} tools connected
+• Automated cross-channel journeys
+• Real-time personalization across {len(activation_channels)} channels
+• Complete customer view
+
+**Results:**
+• 25-40% higher conversion rates
+• 50% faster campaign deployment
+• Unified customer experience
+• AI-powered optimization
+            """)
+        
+        # Overall impact summary
+        st.markdown("**Industry Benchmarks - Typical Iterable Impact:**")
+        st.caption("*These are average improvements seen across Iterable's customer base, not specific to your configuration above.*")
+        
+        col1, col2, col3 = st.columns(3)
+        
+        with col1:
+            st.metric("Setup Time Reduction", "50%", "2-3 hours per campaign")
+        with col2:
+            st.metric("Conversion Rate Lift", "25-40%", "Unified experience")
+        with col3:
+            st.metric("Customer Satisfaction", "+35%", "Consistent messaging")
 
 # --- A/B Testing Strategy Center ---
 st.markdown("---")
@@ -631,17 +604,18 @@ with st.expander("Scientific Testing Framework", expanded=False):
     
     if st.session_state.event_timeline:
         if st.button("Generate A/B Test Strategy"):
+            if not check_openai_config():
+                st.stop()
+                
             # Clear other AI responses
             st.session_state.event_suggestion = ""
             st.session_state.journey_optimization = ""
             
             with st.spinner("Designing A/B test strategy..."):
-                try:
-                    client = openai.OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
-                    timeline = st.session_state.event_timeline
-                    event_history = ", ".join(timeline) if timeline else "No events simulated."
+                timeline = st.session_state.event_timeline
+                event_history = ", ".join(timeline) if timeline else "No events simulated."
 
-                    prompt = f"""
+                prompt = f"""
 You are a conversion optimization expert designing A/B tests for Iterable's platform. Based on the customer persona '{persona}' and their journey: {event_history}
 
 Design a comprehensive A/B testing strategy including:
@@ -655,115 +629,24 @@ Design a comprehensive A/B testing strategy including:
 Focus on tests that would have the highest impact on conversion rates and customer experience for this specific journey and persona.
 
 Make recommendations practical and implementable within Iterable's testing framework.
-                    """
+                """
 
-                    response = client.chat.completions.create(
-                        model="gpt-4",
-                        messages=[
-                            {"role": "system", "content": "You are a conversion optimization expert specializing in A/B testing and statistical analysis for marketing campaigns."},
-                            {"role": "user", "content": prompt}
-                        ],
-                        temperature=0.7,
-                        max_tokens=600
-                    )
-
-                    st.session_state.ab_test_strategy = response.choices[0].message.content
+                response = make_openai_request(
+                    prompt,
+                    "You are a conversion optimization expert specializing in A/B testing and statistical analysis for marketing campaigns.",
+                    600
+                )
+                
+                if response:
+                    st.session_state.ab_test_strategy = response
                     st.rerun()
-
-                except Exception as e:
-                    st.error(f"Error generating A/B test strategy: {str(e)}")
-                    st.info("Please check your OpenAI API key configuration in Streamlit secrets.")
     else:
         st.info("**Build a customer journey above to get personalized A/B testing recommendations**")
 
-# --- Business Impact Calculator ---
-st.markdown("---")
-st.subheader("Business Impact Calculator")
-
-with st.expander("Calculate Iterable's ROI for Your Organization", expanded=False):
-    st.markdown("**See the quantified business impact of implementing Iterable's orchestration platform**")
-    
-    col1, col2, col3 = st.columns(3)
-    
-    with col1:
-        st.markdown("**Current MarTech Stack**")
-        email_platform = st.selectbox("Email Platform:", ["Mailchimp", "Constant Contact", "Campaign Monitor", "Other"])
-        sms_platform = st.selectbox("SMS Platform:", ["Twilio", "Attentive", "Postscript", "Other"])
-        push_platform = st.selectbox("Push Platform:", ["OneSignal", "Airship", "Firebase", "Other"])
-        
-    with col2:
-        st.markdown("**Team & Volume**")
-        team_size = st.number_input("Marketing Team Size:", min_value=1, max_value=50, value=5)
-        monthly_emails = st.number_input("Monthly Email Volume:", min_value=1000, max_value=10000000, value=100000, step=10000)
-        monthly_revenue = st.number_input("Monthly Revenue ($):", min_value=10000, max_value=100000000, value=500000, step=50000)
-        
-    with col3:
-        st.markdown("**Current Challenges**")
-        challenges = st.multiselect("Primary Pain Points:", [
-            "Manual campaign coordination",
-            "Inconsistent customer experience", 
-            "Poor campaign timing",
-            "Limited personalization",
-            "Fragmented customer data",
-            "High tool management overhead"
-        ])
-    
-    if email_platform and sms_platform and challenges:
-        if st.button("Calculate Iterable's Business Impact"):
-            # Clear other AI responses  
-            st.session_state.event_suggestion = ""
-            st.session_state.journey_optimization = ""
-            st.session_state.ab_test_strategy = ""
-            
-            with st.spinner("Calculating personalized business impact..."):
-                try:
-                    client = openai.OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
-                    
-                    prompt = f"""
-You are a business impact analyst calculating ROI for Iterable's customer engagement platform. Based on this organization's profile:
-
-**Current Setup:**
-- Email Platform: {email_platform}
-- SMS Platform: {sms_platform}  
-- Push Platform: {push_platform}
-- Team Size: {team_size} people
-- Monthly Email Volume: {monthly_emails:,}
-- Monthly Revenue: ${monthly_revenue:,}
-- Primary Challenges: {', '.join(challenges)}
-
-**Calculate specific business impact including:**
-
-1. **Cost Savings** - Tool consolidation, reduced manual work, team efficiency gains
-2. **Revenue Impact** - Improved conversion rates, better timing, increased personalization
-3. **Time Savings** - Automation benefits, reduced campaign setup time
-4. **Implementation Timeline** - Expected timeline and resource requirements
-5. **ROI Summary** - Quantified return on investment with specific metrics
-
-Use realistic industry benchmarks for marketing automation ROI. Provide specific dollar amounts and percentages where possible.
-
-Make calculations realistic and conservative, focusing on measurable business outcomes that would resonate with finance teams and executives.
-                    """
-
-                    response = client.chat.completions.create(
-                        model="gpt-4",
-                        messages=[
-                            {"role": "system", "content": "You are a business impact analyst specializing in MarTech ROI analysis and platform consolidation benefits."},
-                            {"role": "user", "content": prompt}
-                        ],
-                        temperature=0.7,
-                        max_tokens=800
-                    )
-
-                    st.session_state.business_impact = response.choices[0].message.content
-                    st.rerun()
-
-                except Exception as e:
-                    st.error(f"Error calculating business impact: {str(e)}")
-    
-    # Display business impact analysis
-    if st.session_state.business_impact:
-        st.success("**Personalized Business Impact Analysis:**")
-        st.markdown(st.session_state.business_impact)
+# Display A/B Test Strategy
+if st.session_state.ab_test_strategy:
+    st.success("**A/B Test Strategy:**")
+    st.markdown(st.session_state.ab_test_strategy)
 
 # --- Competitive Positioning Module ---
 st.markdown("---")
@@ -933,18 +816,11 @@ with st.expander("Strategic Competitive Positioning", expanded=False):
                         iterable_content += f"**{priority}:**\n• {iterable_advantages[priority]}\n\n"
                 
                 # Add additional Iterable advantages
-                iterable_context = {
-                    "general": "• Modern cloud-native architecture built for marketing teams\n• Self-service platform requiring minimal technical resources\n• Unified customer data model across all touchpoints\n• Real-time decisioning and instant campaign updates\n• Drag-and-drop workflow builder with visual journey mapping\n• Comprehensive analytics and attribution across all channels"
-                }
+                iterable_context = "• Modern cloud-native architecture built for marketing teams\n• Self-service platform requiring minimal technical resources\n• Unified customer data model across all touchpoints\n• Real-time decisioning and instant campaign updates\n• Drag-and-drop workflow builder with visual journey mapping\n• Comprehensive analytics and attribution across all channels"
                 
-                iterable_content += f"\n**Platform Advantages:**\n{iterable_context['general']}"
+                iterable_content += f"\n**Platform Advantages:**\n{iterable_context}"
                 
                 st.success(iterable_content if iterable_content else "Iterable addresses your key priorities with modern platform capabilities.")
-
-# Display A/B Test Strategy
-if st.session_state.ab_test_strategy:
-    st.success("**A/B Test Strategy:**")
-    st.markdown(st.session_state.ab_test_strategy)
 
 # --- Footer ---
 st.markdown("---")
