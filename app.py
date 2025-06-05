@@ -1,5 +1,6 @@
 import streamlit as st
 import streamlit.components.v1 as components
+import openai
 
 # --- Page Configuration ---
 st.set_page_config(page_title="Iterable Demo Copilot", layout="wide")
@@ -105,7 +106,7 @@ journey_flows = {
     """
 }
 
-# --- Render Diagram ---
+# --- Render Mermaid Diagram ---
 st.subheader(f"Customer Journey: {persona}")
 components.html(
     f"""
@@ -130,3 +131,31 @@ summaries = {
 }
 
 st.markdown(f"**Use Case Summary:** {summaries[persona]}")
+
+# --- GPT Integration: AI Suggestions ---
+if st.button("Ask AI for Campaign Suggestions"):
+    with st.spinner("Generating AI suggestions..."):
+        openai.api_key = st.secrets["OPENAI_API_KEY"]
+
+        prompt = f"""
+You are a senior marketing strategist. Based on the customer journey below for the persona '{persona}', suggest improvements for engagement, timing, or conversion. Include subject lines, SMS copy, push notification ideas, and any relevant A/B testing strategies.
+
+Journey Summary:
+{summaries[persona]}
+
+Be concise and strategic. Break your response into clearly labeled sections.
+        """
+
+        response = openai.ChatCompletion.create(
+            model="gpt-4",
+            messages=[
+                {"role": "system", "content": "You are a senior marketing strategist specializing in customer engagement and MarTech."},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.7,
+            max_tokens=500
+        )
+
+        suggestions = response["choices"][0]["message"]["content"]
+        st.markdown("### AI Campaign Suggestions")
+        st.markdown(suggestions)
