@@ -1,4 +1,214 @@
-import streamlit as st
+# Display AI Responses for Event & Journey Intelligence
+if st.session_state.event_suggestion:
+    st.success("**Event-Specific Recommendations:**")
+    st.markdown(st.session_state.event_suggestion)
+
+if st.session_state.journey_optimization:
+    st.success("**Journey Optimization Strategy:**")
+    st.markdown(st.session_state.journey_optimization)
+
+# --- Iterable's Cross-Channel Orchestration Hub ---
+st.markdown("---")
+st.subheader("Iterable's Cross-Channel Orchestration Hub")
+
+with st.expander("Why Iterable is Your Marketing Command Center", expanded=False):
+    st.markdown("""
+    **Transform Your Disconnected MarTech Stack into a Unified Growth Engine**  
+    
+    Most companies have 15+ marketing tools that don't talk to each other, creating data silos and missed opportunities. 
+    Iterable serves as your central orchestration layer, making every tool in your stack more effective.
+    
+    **What makes Iterable different:**
+    - **Real-time Cross-Channel Decisions**: Unlike point solutions, Iterable coordinates email, SMS, push, and in-app messages in real-time
+    - **Unified Customer Profiles**: Combines data from all sources to create a single view of each customer
+    - **Intelligent Channel Selection**: AI automatically chooses the best channel and timing for each individual
+    - **Workflow Automation**: Replace manual processes with automated, personalized customer journeys
+    """)
+    
+    # Integration Configuration
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown("**Current MarTech Stack**")
+        data_sources = st.multiselect("Select Your Current Tools:", [
+            "Salesforce CRM",
+            "Shopify/E-commerce Platform", 
+            "Google Analytics",
+            "Customer Data Platform (CDP)",
+            "Product Analytics (Mixpanel/Amplitude)",
+            "Support System (Zendesk)",
+            "Billing System (Stripe)",
+            "Data Warehouse (Snowflake/BigQuery)"
+        ], default=["Salesforce CRM", "Shopify/E-commerce Platform"])
+        
+        current_challenges = st.multiselect("Current Challenges:", [
+            "Data silos between tools",
+            "Manual campaign coordination", 
+            "Inconsistent customer experience",
+            "No unified customer view",
+            "Time-consuming campaign setup",
+            "Poor cross-channel attribution"
+        ], default=["Data silos between tools", "Manual campaign coordination"])
+        
+    with col2:
+        st.markdown("**Channels to Orchestrate**")
+        activation_channels = st.multiselect("Target Channels:", [
+            "Email",
+            "SMS", 
+            "Push Notifications",
+            "In-App Messages",
+            "Direct Mail",
+            "Webhooks to External Systems"
+        ], default=["Email", "SMS", "Push Notifications"])
+        
+        team_size = st.selectbox("Marketing Team Size:", [
+            "Small (1-5 people)",
+            "Medium (6-15 people)", 
+            "Large (16+ people)"
+        ], index=1)
+
+    # Dynamic Business Impact Calculator
+    if data_sources and activation_channels and current_challenges:
+        if st.button("Calculate Iterable's Business Impact"):
+            with st.spinner("Calculating personalized business impact..."):
+                try:
+                    client = openai.OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+                    
+                    prompt = f"""
+You are an Iterable ROI analyst. Based on this prospect's current situation, calculate specific, quantified business impact:
+
+**Current State:**
+- Tech Stack: {', '.join(data_sources)}
+- Challenges: {', '.join(current_challenges)}
+- Channels: {', '.join(activation_channels)}
+- Team Size: {team_size}
+- Persona Focus: {persona}
+
+**Calculate specific business impact metrics:**
+1. **Conversion Rate Improvement** - Based on their channels and persona type
+2. **Time Savings** - Hours saved per week from automation
+3. **Revenue Impact** - Annual revenue increase estimate
+4. **Campaign Efficiency** - Reduction in setup time and manual work
+5. **Customer Experience Score** - Improvement in unified experience
+
+Provide specific percentages and dollar amounts where possible. Make it realistic but compelling.
+
+IMPORTANT: Format as a brief, scannable list with numbers. Use "dollars" instead of dollar signs to avoid formatting issues. Avoid using asterisks in your response.
+                    """
+
+                    response = client.chat.completions.create(
+                        model="gpt-4",
+                        messages=[
+                            {"role": "system", "content": "You are an ROI analyst specializing in MarTech transformation impact calculations."},
+                            {"role": "user", "content": prompt}
+                        ],
+                        temperature=0.7,
+                        max_tokens=400
+                    )
+
+                    st.session_state.business_impact = response.choices[0].message.content
+                    st.rerun()
+
+                except Exception as e:
+                    st.error(f"Error calculating business impact: {str(e)}")
+
+    # Display calculated business impact
+    if hasattr(st.session_state, 'business_impact') and st.session_state.business_impact:
+        st.markdown("**Calculated Business Impact:**")
+        st.info(st.session_state.business_impact)
+
+    # Enhanced Iterable Value Proposition Visualization
+    if data_sources and activation_channels:
+        st.markdown("---")
+        st.markdown("**Iterable's Orchestration Impact**")
+        
+        # Create columns for before/after comparison
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown("**BEFORE: Disconnected Stack**")
+            st.error(f"""
+**Current State:**
+• {len(data_sources)} disconnected tools
+• Manual campaign coordination
+• Inconsistent customer experience
+• Data silos and blind spots
+
+**Problems:**
+• {len(current_challenges)} major challenges
+• Average 3-5 hour campaign setup
+• 40% lower conversion rates
+• No real-time optimization
+            """)
+        
+        with col2:
+            st.markdown("**AFTER: Iterable Orchestration**")
+            st.success(f"""
+**Unified Platform:**
+• All {len(data_sources)} tools connected
+• Automated cross-channel journeys
+• Real-time personalization across {len(activation_channels)} channels
+• Complete customer view
+
+**Results:**
+• 25-40% higher conversion rates
+• 50% faster campaign deployment
+• Unified customer experience
+• AI-powered optimization
+            """)
+        
+        # Overall impact summary
+        st.markdown("**Industry Benchmarks - Typical Iterable Impact:**")
+        st.caption("*These are average improvements seen across Iterable's customer base, not specific to your configuration above.*")
+        
+        col1, col2, col3 = st.columns(3)
+        
+        with col1:
+            st.metric("Setup Time Reduction", "50%", "2-3 hours per campaign")
+        with col2:
+            st.metric("Conversion Rate Lift", "25-40%", "Unified experience")
+        with col3:
+            st.metric("Customer Satisfaction", "+35%", "Consistent messaging")
+
+# --- Iterable's Cross-Channel Orchestration Hub ---
+st.markdown("---")
+st.subheader("Iterable's Cross-Channel Orchestration Hub")
+
+with st.expander("Why Iterable is Your Marketing Command Center", expanded=False):
+    st.markdown("""
+    **Transform Your Disconnected MarTech Stack into a Unified Growth Engine**  
+    
+    Most companies have 15+ marketing tools that don't talk to each other, creating data silos and missed opportunities. 
+    Iterable serves as your central orchestration layer, making every tool in your stack more effective.
+    
+    **What makes Iterable different:**
+    - **Real-time Cross-Channel Decisions**: Unlike point solutions, Iterable coordinates email, SMS, push, and in-app messages in real-time
+    - **Unified Customer Profiles**: Combines data from all sources to create a single view of each customer
+    - **Intelligent Channel Selection**: AI automatically chooses the best channel and timing for each individual
+    - **Workflow Automation**: Replace manual processes with automated, personalized customer journeys
+    """)
+    
+    # Integration Configuration
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown("**Current MarTech Stack**")
+        data_sources = st.multiselect("Select Your Current Tools:", [
+            "Salesforce CRM",
+            "Shopify/E-commerce Platform", 
+            "Google Analytics",
+            "Customer Data Platform (CDP)",
+            "Product Analytics (Mixpanel/Amplitude)",
+            "Support System (Zendesk)",
+            "Billing System (Stripe)",
+            "Data Warehouse (Snowflake/BigQuery)"
+        ], default=["Salesforce CRM", "Shopify/E-commerce Platform"])
+        
+        current_challenges = st.multiselect("Current Challenges:", [
+            "Data silos between tools",
+            "Manual campaign coordination", 
+            "Inconsistent customer experience",
+            "No unified customer viewimport streamlit as st
 import streamlit.components.v1 as components
 import openai
 import re
@@ -24,32 +234,32 @@ with st.expander("How to Use This Demo", expanded=True):
 
     ### What makes this demo powerful:
     
-    **🎯 Customer Journey Simulation**
+    **Customer Journey Simulation**
     - **Persona Selection**: Choose from e-commerce, SaaS, or fintech customer profiles
     - **Dynamic Event Timeline**: Build realistic customer journeys with purchase, browse, abandon, and support events
     - **Context-Aware AI**: All recommendations adapt based on the specific journey you create
     
-    **📊 Visual Journey Orchestration**  
+    **Visual Journey Orchestration**  
     - **Before/After Transformation**: See the dramatic difference between disconnected tools vs. Iterable's orchestration
     - **Real-Time Visualization**: Watch your customer journey come to life with dynamic, color-coded progression
     - **Professional Presentation**: Client-ready visualization that clearly demonstrates value
     
-    **💰 Business Impact Calculator**
+    **Business Impact Calculator**
     - **MarTech Stack Configuration**: Input your current tools, team size, and monthly volume
     - **Personalized ROI Analysis**: Get AI-generated business impact calculations specific to your situation
     - **Industry Benchmarks**: Compare your potential results with typical Iterable customer improvements
     
-    **🚀 AI-Powered Marketing Intelligence**
+    **AI-Powered Marketing Intelligence**
     - **Event Suggestions**: Immediate tactical recommendations based on specific customer events and journey context
     - **Journey Optimization**: Strategic improvements to increase conversion rates and customer lifetime value
     - **A/B Testing Center**: Scientific approach to validating marketing decisions with specific test designs
     
-    **⚔️ Competitive Positioning Module**
+    **Competitive Positioning Module**
     - **Dynamic Competitor Analysis**: Professional comparisons vs. Braze, Klaviyo, Salesforce Marketing Cloud, and other major players
     - **Priority-Based Messaging**: Positioning automatically adapts based on what matters most to your specific situation
     - **Client-Ready Presentation**: Visual before/after competitive comparisons suitable for prospect meetings
     
-    **🎯 Solutions Consultant Excellence**
+    **Solutions Consultant Excellence**
     - **Consultative Discovery**: Demonstrates needs assessment and solution tailoring capabilities
     - **Technical Competence**: Shows understanding of MarTech integration and data orchestration
     - **Business Acumen**: Quantifies value and ROI in business terms that matter to executives
@@ -292,7 +502,7 @@ Highlighted nodes represent:
 Use the AI suggestions to understand optimal engagement points in the journey.
 """)
 
-st.info("💡 **Key Insight**: Notice how Iterable creates a unified customer experience by coordinating all your existing tools, rather than replacing them.")
+st.info("**Key Insight**: Notice how Iterable creates a unified customer experience by coordinating all your existing tools, rather than replacing them.")
 
 # --- Event Status Display ---
 if highlight_node:
@@ -461,7 +671,7 @@ Make recommendations practical and implementable within Iterable's testing frame
                     st.error(f"Error generating A/B test strategy: {str(e)}")
                     st.info("Please check your OpenAI API key configuration in Streamlit secrets.")
     else:
-        st.info("👆 **Build a customer journey above to get personalized A/B testing recommendations**")
+        st.info("**Build a customer journey above to get personalized A/B testing recommendations**")
 
 # --- Business Impact Calculator ---
 st.markdown("---")
