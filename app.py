@@ -256,7 +256,7 @@ Reason: <Short explanation>
 
             st.markdown("### AI Campaign Suggestion Response")
             st.markdown(suggestions)
-            st.experimental_rerun()
+            st.rerun()  # Changed from st.experimental_rerun()
 
         except Exception as e:
             st.error(f"Error generating AI suggestions: {str(e)}")
