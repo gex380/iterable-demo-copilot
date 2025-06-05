@@ -41,7 +41,8 @@ if persona != st.session_state.current_persona:
     st.session_state.current_persona = persona
     st.session_state.event_timeline = []
     st.session_state.next_node_id = ""
-    st.session_state.next_node_reason = ""
+    st.session_state.event_recommendation = ""
+    st.session_state.campaign_strategy = ""
     st.rerun()
 
 # --- Event Selector ---
@@ -74,8 +75,10 @@ if "event_timeline" not in st.session_state:
     st.session_state.event_timeline = []
 if "next_node_id" not in st.session_state:
     st.session_state.next_node_id = ""
-if "next_node_reason" not in st.session_state:
-    st.session_state.next_node_reason = ""
+if "event_recommendation" not in st.session_state:
+    st.session_state.event_recommendation = ""
+if "campaign_strategy" not in st.session_state:
+    st.session_state.campaign_strategy = ""
 
 if st.button("Add Event to Timeline"):
     if selected_event not in st.session_state.event_timeline:
@@ -84,7 +87,8 @@ if st.button("Add Event to Timeline"):
 if st.button("Reset Timeline"):
     st.session_state.event_timeline = []
     st.session_state.next_node_id = ""
-    st.session_state.next_node_reason = ""
+    st.session_state.event_recommendation = ""
+    st.session_state.campaign_strategy = ""
 
 if st.session_state.event_timeline:
     st.markdown("### Simulated Event Timeline")
@@ -251,9 +255,16 @@ Use the AI suggestions to understand optimal engagement points in the journey.
 # --- Event Status Display ---
 if highlight_node:
     st.info(f"🎯 **Event Simulation:** {selected_event} - Highlighted in journey diagram")
-if st.session_state.next_node_reason:
-    st.success(f"💡 **AI Campaign Recommendation:**")
-    st.markdown(f"{st.session_state.next_node_reason}")
+
+# Display Event Recommendation
+if st.session_state.event_recommendation:
+    st.success(f"💡 **Event Recommendation:**")
+    st.markdown(f"{st.session_state.event_recommendation}")
+
+# Display Campaign Strategy
+if st.session_state.campaign_strategy:
+    st.success(f"🎯 **Campaign Strategy Recommendation:**")
+    st.markdown(f"{st.session_state.campaign_strategy}")
 
 # --- GPT Integration: AI Suggestions ---
 if st.button("Ask AI for Campaign Suggestions"):
