@@ -205,10 +205,10 @@ Use the AI suggestions to understand optimal engagement points in the journey.
 
 # --- Event Status Display ---
 if highlight_node:
-    st.info(f"🎯 **Event Simulation:** {selected_event} - Highlighting node {highlight_node} in the journey")
-if st.session_state.next_node_id:
-    st.success(f"💡 **AI Recommendation:** Highlighting node {st.session_state.next_node_id} as the next step")
-    st.markdown(f"**Reasoning:** {st.session_state.next_node_reason}")
+    st.info(f"🎯 **Event Simulation:** {selected_event} - Highlighted in journey diagram")
+if st.session_state.next_node_reason:
+    st.success(f"💡 **AI Campaign Recommendation:**")
+    st.markdown(f"{st.session_state.next_node_reason}")
 
 # --- GPT Integration: AI Suggestions ---
 if st.button("Ask AI for Campaign Suggestions"):
@@ -222,15 +222,20 @@ if st.button("Ask AI for Campaign Suggestions"):
 You are a senior marketing strategist. Based on the customer journey for persona '{persona}', and the following event timeline:
 {event_history}
 
-Suggest the next best step in the journey. Provide:
-1. The **node ID** (e.g. H)
-2. The **action/label** (e.g. Send Email: Offer 10% off)
-3. A **brief explanation** (why this is the right step)
+Available journey steps for {persona}:
+- Send SMS (early intervention)
+- Send Email with discount offer (mid-journey)  
+- Send Push notification (final attempt)
+- Wait and monitor behavior
+- Exit/end journey
+
+Suggest the next best campaign action. Provide:
+1. The **recommended action** (e.g. "Send Email with 10% discount")
+2. A **brief explanation** (why this is the right step strategically)
 
 Format:
-Node: <ID>
-Action: <Label>
-Reason: <Short explanation>
+Recommended Action: <Specific action>
+Strategic Reasoning: <Short explanation>
             """
 
             response = client.chat.completions.create(
@@ -245,14 +250,14 @@ Reason: <Short explanation>
 
             suggestions = response.choices[0].message.content
 
-            # Extract recommended node from GPT response
-            match_node = re.search(r"Node:\s*(\w+)", suggestions)
-            match_reason = re.search(r"Reason:\s*(.*)", suggestions)
+            # Extract recommended action from GPT response
+            match_action = re.search(r"Recommended Action:\s*(.*)", suggestions)
+            match_reason = re.search(r"Strategic Reasoning:\s*(.*)", suggestions)
 
-            if match_node:
-                st.session_state.next_node_id = match_node.group(1)
+            if match_action:
+                st.session_state.next_node_reason = match_action.group(1)
             if match_reason:
-                st.session_state.next_node_reason = match_reason.group(1)
+                st.session_state.next_node_reason += f" - {match_reason.group(1)}"
 
             st.markdown("### AI Campaign Suggestion Response")
             st.markdown(suggestions)
