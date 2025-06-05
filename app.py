@@ -12,94 +12,65 @@ persona = st.sidebar.selectbox("Choose a Persona:", persona_list)
 
 # --- Mermaid.js Journey Maps ---
 journey_flows = {
-    "GlowSkin": '''
-        flowchart TD
-            Start([User Adds Items to Cart])
-            Wait1[Wait 2 Hours]
-            Decision1{Has User Purchased?}
-            SMS[Send SMS: "You left something behind"]
-            Wait2[Wait 4 Hours]
-            Decision2{Has User Purchased?}
-            Email[Send Email: "Still want that glow? Here's 10% off"]
-            Wait3[Wait 2 Days]
-            Decision3{Has User Purchased?}
-            Push[Send Push: "Your GlowKit is still waiting"]
-            ExitSuccess([Exit: Purchase Completed])
-            ExitFail([Exit: No Response After 3 Touches])
-            Start --> Wait1 --> Decision1
-            Decision1 -- Yes --> ExitSuccess
-            Decision1 -- No --> SMS --> Wait2 --> Decision2
-            Decision2 -- Yes --> ExitSuccess
-            Decision2 -- No --> Email --> Wait3 --> Decision3
-            Decision3 -- Yes --> ExitSuccess
-            Decision3 -- No --> Push --> ExitFail
-    ''',
-    "PulseFit": '''
-        flowchart TD
-            Start([User Signs Up for App])
-            Wait1[Wait 24 Hours]
-            Decision1{User Active in App?}
-            Push[Send Push: "Ready to crush your fitness goals?"]
-            Wait2[Wait 3 Days]
-            Decision2{User Active in App?}
-            Email[Send Email: "5 Quick Workouts to Get Started"]
-            Wait3[Wait 1 Week]
-            Decision3{User Active in App?}
-            SMS[Send SMS: "Get 30% off premium - limited time!"]
-            ExitSuccess([Exit: User Engaged])
-            ExitFail([Exit: User Remains Inactive])
-            Start --> Wait1 --> Decision1
-            Decision1 -- Yes --> ExitSuccess
-            Decision1 -- No --> Push --> Wait2 --> Decision2
-            Decision2 -- Yes --> ExitSuccess
-            Decision2 -- No --> Email --> Wait3 --> Decision3
-            Decision3 -- Yes --> ExitSuccess
-            Decision3 -- No --> SMS --> ExitFail
-    ''',
-    "JetQuest": '''
-        flowchart TD
-            Start([User Browses Flight Deals])
-            Wait1[Wait 1 Hour]
-            Decision1{User Booked Flight?}
-            Email[Send Email: "Your flight deal expires soon!"]
-            Wait2[Wait 6 Hours]
-            Decision2{User Booked Flight?}
-            SMS[Send SMS: "Last chance - save $200 on your trip"]
-            Wait3[Wait 1 Day]
-            Decision3{User Booked Flight?}
-            Retarget[Send Retargeting Ad: "Similar destinations at great prices"]
-            ExitSuccess([Exit: Booking Completed])
-            ExitFail([Exit: Deal Expired])
-            Start --> Wait1 --> Decision1
-            Decision1 -- Yes --> ExitSuccess
-            Decision1 -- No --> Email --> Wait2 --> Decision2
-            Decision2 -- Yes --> ExitSuccess
-            Decision2 -- No --> SMS --> Wait3 --> Decision3
-            Decision3 -- Yes --> ExitSuccess
-            Decision3 -- No --> Retarget --> ExitFail
-    ''',
-    "LeadSync": '''
-        flowchart TD
-            Start([User Starts Free Trial])
-            Wait1[Wait 2 Days]
-            Decision1{User Setup Complete?}
-            Email1[Send Email: "Complete your setup in 5 minutes"]
-            Wait2[Wait 3 Days]
-            Decision2{User Active in Trial?}
-            InApp[Send In-App: "Need help? Here's a quick guide"]
-            Wait3[Wait 1 Week]
-            Decision3{User Engaged?}
-            CSM[Alert CSM: "High-value prospect needs attention"]
-            ExitSuccess([Exit: Trial Converted])
-            ExitFail([Exit: Trial Expired])
-            Start --> Wait1 --> Decision1
-            Decision1 -- Yes --> ExitSuccess
-            Decision1 -- No --> Email1 --> Wait2 --> Decision2
-            Decision2 -- Yes --> ExitSuccess
-            Decision2 -- No --> InApp --> Wait3 --> Decision3
-            Decision3 -- Yes --> ExitSuccess
-            Decision3 -- No --> CSM --> ExitFail
-    '''
+    "GlowSkin": '''graph TD
+    A[User Adds Items to Cart] --> B[Wait 2 Hours]
+    B --> C{Has User Purchased?}
+    C -->|Yes| D[Exit: Purchase Completed]
+    C -->|No| E[Send SMS: You left something behind]
+    E --> F[Wait 4 Hours]
+    F --> G{Has User Purchased?}
+    G -->|Yes| D
+    G -->|No| H[Send Email: Still want that glow? 10% off]
+    H --> I[Wait 2 Days]
+    I --> J{Has User Purchased?}
+    J -->|Yes| D
+    J -->|No| K[Send Push: Your GlowKit is waiting]
+    K --> L[Exit: No Response After 3 Touches]''',
+    
+    "PulseFit": '''graph TD
+    A[User Signs Up for App] --> B[Wait 24 Hours]
+    B --> C{User Active in App?}
+    C -->|Yes| D[Exit: User Engaged]
+    C -->|No| E[Send Push: Ready to crush your fitness goals?]
+    E --> F[Wait 3 Days]
+    F --> G{User Active in App?}
+    G -->|Yes| D
+    G -->|No| H[Send Email: 5 Quick Workouts to Get Started]
+    H --> I[Wait 1 Week]
+    I --> J{User Active in App?}
+    J -->|Yes| D
+    J -->|No| K[Send SMS: Get 30% off premium]
+    K --> L[Exit: User Remains Inactive]''',
+    
+    "JetQuest": '''graph TD
+    A[User Browses Flight Deals] --> B[Wait 1 Hour]
+    B --> C{User Booked Flight?}
+    C -->|Yes| D[Exit: Booking Completed]
+    C -->|No| E[Send Email: Your flight deal expires soon]
+    E --> F[Wait 6 Hours]
+    F --> G{User Booked Flight?}
+    G -->|Yes| D
+    G -->|No| H[Send SMS: Last chance - save $200]
+    H --> I[Wait 1 Day]
+    I --> J{User Booked Flight?}
+    J -->|Yes| D
+    J -->|No| K[Send Retargeting Ad: Similar destinations]
+    K --> L[Exit: Deal Expired]''',
+    
+    "LeadSync": '''graph TD
+    A[User Starts Free Trial] --> B[Wait 2 Days]
+    B --> C{User Setup Complete?}
+    C -->|Yes| D[Exit: Trial Converted]
+    C -->|No| E[Send Email: Complete your setup in 5 minutes]
+    E --> F[Wait 3 Days]
+    F --> G{User Active in Trial?}
+    G -->|Yes| D
+    G -->|No| H[Send In-App: Need help? Quick guide]
+    H --> I[Wait 1 Week]
+    I --> J{User Engaged?}
+    J -->|Yes| D
+    J -->|No| K[Alert CSM: High-value prospect needs attention]
+    K --> L[Exit: Trial Expired]'''
 }
 
 # --- Mermaid Renderer ---
