@@ -1,37 +1,27 @@
 import streamlit as st
+import streamlit.components.v1 as components
 import openai
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
+import re
+import math
 
 # --- Page Configuration ---
-st.set_page_config(
-    page_title="Iterable Demo - Customer Journey Orchestration",
-    page_icon="🚀",
-    layout="wide"
-)
+st.set_page_config(page_title="Iterable Demo Copilot", layout="wide")
+st.title("Iterable Demo Copilot")
 
-# --- Initialize Session State ---
-if "event_timeline" not in st.session_state:
-    st.session_state.event_timeline = []
-if "next_node_id" not in st.session_state:
-    st.session_state.next_node_id = ""
-if "current_persona" not in st.session_state:
-    st.session_state.current_persona = ""
-if "event_suggestion" not in st.session_state:
-    st.session_state.event_suggestion = ""
-if "journey_optimization" not in st.session_state:
-    st.session_state.journey_optimization = ""
-if "ab_test_strategy" not in st.session_state:
-    st.session_state.ab_test_strategy = ""
-if "business_impact" not in st.session_state:
-    st.session_state.business_impact = ""
-
-# --- Header ---
-st.title("🚀 Iterable Customer Journey Orchestration Demo")
-st.markdown("**Transform disconnected marketing tools into intelligent, coordinated customer experiences**")
-
-with st.expander("💡 Key Features & Demo Guide", expanded=False):
+# --- Onboarding Guide ---
+with st.expander("How to Use This Demo", expanded=True):
     st.markdown("""
+    **Welcome to the Iterable Demo Copilot.**  
+    This tool demonstrates how Iterable transforms disconnected marketing tools into a unified growth engine.
+
+    ### Key Features:
+    1. **Select a persona** from the sidebar - each represents a real customer scenario
+    2. **Simulate user events** to build behavioral timelines
+    3. **Visualize customer journeys** with dynamic flow diagrams
+    4. **Get AI-powered recommendations** tailored to specific customer behavior
+    5. **Explore A/B testing strategies** with statistical rigor
+    6. **See Iterable's ROI impact** on your existing MarTech stack
+
     ### What makes this demo powerful:
     
     **🎯 Customer Journey Simulation**
@@ -69,13 +59,14 @@ with st.expander("💡 Key Features & Demo Guide", expanded=False):
     This showcases Iterable's unique value: turning your collection of marketing tools into an intelligent, coordinated growth engine while demonstrating the strategic thinking and technical competence expected from elite Solutions Consultants.
     """)
 
-# --- Customer Persona Selection ---
-st.subheader("1. Select Customer Persona")
-persona = st.selectbox("Choose a customer persona to simulate:", [
-    "E-commerce: Abandoned Cart Shopper", 
-    "SaaS: Trial User Not Activating",
-    "Fintech: New Account Holder"
-])
+# --- Persona Selector ---
+persona_list = ["GlowSkin", "PulseFit", "JetQuest", "LeadSync"]
+
+# Reset everything when persona changes
+if "current_persona" not in st.session_state:
+    st.session_state.current_persona = persona_list[0]
+
+persona = st.sidebar.selectbox("Choose a Persona:", persona_list)
 
 # Check if persona changed and reset if so
 if persona != st.session_state.current_persona:
@@ -88,46 +79,48 @@ if persona != st.session_state.current_persona:
     st.session_state.business_impact = ""
     st.rerun()
 
-# --- Journey Events Configuration ---
-st.subheader("2. Build Customer Journey Timeline")
-
-# Define persona-specific events
-persona_events = {
-    "E-commerce: Abandoned Cart Shopper": [
-        "Browsed Product Page", "Added Item to Cart", "Abandoned Cart", 
-        "Received Email Reminder", "Clicked Email Link", "Completed Purchase",
-        "Left Product Review", "Browsed Related Items"
+# --- Event Selector ---
+event_options = {
+    "GlowSkin": [
+        "Cart Abandoned", "Email Opened", "Email Unopened", "Push Notification Ignored", 
+        "SMS Received", "Product Review Left", "Wishlist Item Added", "Discount Code Used",
+        "Social Media Shared", "Return Customer", "Subscription Started", "Unsubscribed"
     ],
-    "SaaS: Trial User Not Activating": [
-        "Signed Up for Trial", "Received Welcome Email", "Logged In", 
-        "Completed Onboarding", "Created First Project", "Invited Team Member",
-        "Used Core Feature", "Trial Expiring Soon", "Upgraded to Paid"
+    "PulseFit": [
+        "User Inactive", "Push Notification Sent", "Email Unopened", "Workout Completed",
+        "App Opened", "Premium Upgrade", "Goal Achievement", "Friend Invited", 
+        "Progress Photo Shared", "Subscription Cancelled", "Support Contact", "Tutorial Skipped"
     ],
-    "Fintech: New Account Holder": [
-        "Opened Account", "Received Welcome Kit", "First Login", 
-        "Set Up Direct Deposit", "Made First Transaction", "Downloaded Mobile App",
-        "Enrolled in Alerts", "Applied for Credit Product", "Referred Friend"
+    "JetQuest": [
+        "Flight Searched", "Booking Abandoned", "Email Opened", "SMS Clicked", 
+        "Price Alert Set", "Loyalty Points Earned", "Review Left", "Newsletter Subscribed",
+        "Mobile App Downloaded", "Customer Service Contact", "Refund Requested", "Rebooking Attempt"
+    ],
+    "LeadSync": [
+        "Trial Started", "Demo Requested", "Email Unopened", "Feature Explored",
+        "Integration Attempted", "Onboarding Completed", "Team Member Invited", "Billing Info Added",
+        "Support Ticket Created", "Webinar Attended", "Case Study Downloaded", "Contract Signed"
     ]
 }
+selected_event = st.selectbox("Simulate User Event:", event_options.get(persona, []))
 
-current_events = persona_events[persona]
+# --- Timeline Tracking ---
+if "event_timeline" not in st.session_state:
+    st.session_state.event_timeline = []
+if "next_node_id" not in st.session_state:
+    st.session_state.next_node_id = ""
+if "event_suggestion" not in st.session_state:
+    st.session_state.event_suggestion = ""
+if "journey_optimization" not in st.session_state:
+    st.session_state.journey_optimization = ""
+if "ab_test_strategy" not in st.session_state:
+    st.session_state.ab_test_strategy = ""
+if "business_impact" not in st.session_state:
+    st.session_state.business_impact = ""
 
-col1, col2 = st.columns([3, 1])
-
-with col1:
-    selected_event = st.selectbox("Add next customer event:", [""] + current_events)
-    
-with col2:
-    if st.button("Add Event") and selected_event:
-        if selected_event not in st.session_state.event_timeline:
-            st.session_state.event_timeline.append(selected_event)
-            st.rerun()
-
-# Display current timeline
-if st.session_state.event_timeline:
-    st.write("**Current Journey Timeline:**")
-    timeline_display = " → ".join(st.session_state.event_timeline)
-    st.info(f"🔄 {timeline_display}")
+if st.button("Add Event to Timeline"):
+    if selected_event not in st.session_state.event_timeline:
+        st.session_state.event_timeline.append(selected_event)
 
 if st.button("Reset Timeline"):
     st.session_state.event_timeline = []
@@ -137,138 +130,157 @@ if st.button("Reset Timeline"):
     st.session_state.ab_test_strategy = ""
     st.session_state.business_impact = ""
 
-# --- Journey Visualization ---
-st.subheader("3. Iterable's Orchestration Impact")
+if st.session_state.event_timeline:
+    st.markdown("### Simulated Event Timeline")
+    st.write(" → ".join(st.session_state.event_timeline))
+else:
+    st.markdown("_No events in timeline yet._")
 
-def create_orchestration_diagram():
-    # Create subplots: 1 row, 2 columns
-    fig = make_subplots(
-        rows=1, cols=2,
-        subplot_titles=("Before: Disconnected Tools", "After: Iterable Orchestration"),
-        specs=[[{"type": "scatter"}, {"type": "scatter"}]],
-        horizontal_spacing=0.1
-    )
-    
-    # Before: Disconnected tools (left side)
-    tools = ["Email Platform", "SMS Service", "Push Notifications", "Analytics", "CRM"]
-    tool_positions = [(1, 4), (0.5, 3), (1.5, 3), (0.5, 2), (1.5, 2)]
-    
-    for i, (tool, (x, y)) in enumerate(zip(tools, tool_positions)):
-        fig.add_trace(go.Scatter(
-            x=[x], y=[y], 
-            mode='markers+text',
-            marker=dict(size=60, color='lightcoral', line=dict(width=2, color='darkred')),
-            text=tool, textposition="middle center",
-            textfont=dict(size=10, color='white'),
-            showlegend=False,
-            hoverinfo='text',
-            hovertext=f"{tool}<br>Isolated • Manual • Reactive"
-        ), row=1, col=1)
-    
-    # Add customer in the middle (disconnected)
-    fig.add_trace(go.Scatter(
-        x=[1], y=[1],
-        mode='markers+text',
-        marker=dict(size=40, color='gray', symbol='star'),
-        text="😕 Customer", textposition="bottom center",
-        showlegend=False,
-        hoverinfo='text',
-        hovertext="Fragmented Experience<br>• Inconsistent messaging<br>• Poor timing<br>• Missed opportunities"
-    ), row=1, col=1)
-    
-    # After: Iterable orchestration (right side)
-    # Central Iterable hub
-    fig.add_trace(go.Scatter(
-        x=[1], y=[3],
-        mode='markers+text',
-        marker=dict(size=80, color='darkgreen', line=dict(width=3, color='green')),
-        text="Iterable<br>Orchestration", textposition="middle center",
-        textfont=dict(size=12, color='white'),
-        showlegend=False,
-        hoverinfo='text',
-        hovertext="Unified Platform<br>• Real-time coordination<br>• Intelligent automation<br>• Cross-channel optimization"
-    ), row=1, col=2)
-    
-    # Connected tools around Iterable
-    orchestrated_tools = ["Email", "SMS", "Push", "Analytics", "CRM"]
-    orchestrated_positions = [(0.3, 4), (1.7, 4), (0.3, 2), (1.7, 2), (1, 4.5)]
-    
-    for tool, (x, y) in zip(orchestrated_tools, orchestrated_positions):
-        fig.add_trace(go.Scatter(
-            x=[x], y=[y],
-            mode='markers+text',
-            marker=dict(size=40, color='lightgreen', line=dict(width=2, color='green')),
-            text=tool, textposition="middle center",
-            textfont=dict(size=9, color='darkgreen'),
-            showlegend=False
-        ), row=1, col=2)
-        
-        # Add connection lines to Iterable hub
-        fig.add_trace(go.Scatter(
-            x=[x, 1], y=[y, 3],
-            mode='lines',
-            line=dict(color='green', width=2, dash='dot'),
-            showlegend=False,
-            hoverinfo='skip'
-        ), row=1, col=2)
-    
-    # Happy customer
-    fig.add_trace(go.Scatter(
-        x=[1], y=[1],
-        mode='markers+text',
-        marker=dict(size=50, color='gold', symbol='star'),
-        text="😊 Customer", textposition="bottom center",
-        textfont=dict(size=12),
-        showlegend=False,
-        hoverinfo='text',
-        hovertext="Unified Experience<br>• Personalized messaging<br>• Perfect timing<br>• Seamless journey"
-    ), row=1, col=2)
-    
-    # Connection from Iterable to customer
-    fig.add_trace(go.Scatter(
-        x=[1, 1], y=[3, 1.5],
-        mode='lines',
-        line=dict(color='gold', width=4),
-        showlegend=False,
-        hoverinfo='skip'
-    ), row=1, col=2)
-    
-    # Highlight current journey events if any
-    if st.session_state.event_timeline:
-        # Add journey progression indicator
-        progress = len(st.session_state.event_timeline) / 5  # Normalize to 0-1
-        fig.add_trace(go.Scatter(
-            x=[1], y=[0.5],
-            mode='markers+text',
-            marker=dict(size=30, color='orange'),
-            text=f"Journey: {len(st.session_state.event_timeline)} events",
-            textposition="bottom center",
-            showlegend=False
-        ), row=1, col=2)
-    
-    # Update layout
-    fig.update_layout(
-        height=400,
-        showlegend=False,
-        title_text="Iterable's Customer Journey Orchestration Platform",
-        title_x=0.5
-    )
-    
-    # Update axes
-    for i in [1, 2]:
-        fig.update_xaxes(range=[-0.5, 2.5], showgrid=False, showticklabels=False, row=1, col=i)
-        fig.update_yaxes(range=[0, 5], showgrid=False, showticklabels=False, row=1, col=i)
-    
-    return fig
+# --- Event Highlight Mapping ---
+event_to_node_map = {
+    "GlowSkin": {
+        "Cart Abandoned": "E", "Email Opened": "H", "Email Unopened": "H", "Push Notification Ignored": "K",
+        "SMS Received": "E", "Product Review Left": "D", "Wishlist Item Added": "A", "Discount Code Used": "D",
+        "Social Media Shared": "D", "Return Customer": "A", "Subscription Started": "D", "Unsubscribed": "L"
+    },
+    "PulseFit": {
+        "User Inactive": "E", "Push Notification Sent": "E", "Email Unopened": "H", "Workout Completed": "D",
+        "App Opened": "A", "Premium Upgrade": "D", "Goal Achievement": "D", "Friend Invited": "D",
+        "Progress Photo Shared": "D", "Subscription Cancelled": "L", "Support Contact": "H", "Tutorial Skipped": "E"
+    },
+    "JetQuest": {
+        "Flight Searched": "A", "Booking Abandoned": "E", "Email Opened": "E", "SMS Clicked": "H",
+        "Price Alert Set": "A", "Loyalty Points Earned": "D", "Review Left": "D", "Newsletter Subscribed": "H",
+        "Mobile App Downloaded": "A", "Customer Service Contact": "H", "Refund Requested": "K", "Rebooking Attempt": "E"
+    },
+    "LeadSync": {
+        "Trial Started": "A", "Demo Requested": "A", "Email Unopened": "E", "Feature Explored": "A",
+        "Integration Attempted": "H", "Onboarding Completed": "D", "Team Member Invited": "D", "Billing Info Added": "D",
+        "Support Ticket Created": "H", "Webinar Attended": "H", "Case Study Downloaded": "E", "Contract Signed": "D"
+    }
+}
 
-# Display the orchestration diagram
-fig = create_orchestration_diagram()
-st.plotly_chart(fig, use_container_width=True)
+highlight_node = st.session_state.next_node_id or event_to_node_map.get(persona, {}).get(selected_event, "")
+highlight_class = "classDef highlight fill:#ffcc00;"
+highlight_command = f"class {highlight_node} highlight;" if highlight_node else ""
 
-# --- Event Status Display ---
-highlight_node = selected_event in st.session_state.event_timeline if selected_event else False
-if highlight_node:
-    st.info(f"**Event Simulation:** {selected_event} - Highlighted in journey diagram")
+# --- Journey Definitions with Highlight Support ---
+def get_journey_flow(persona_name, highlight_class_def, highlight_command_def):
+    flows = {
+        "GlowSkin": f'''graph TD
+            A[User Adds Items to Cart] --> B[Wait 2 Hours]
+            B --> C{{Has User Purchased?}}
+            C -->|Yes| D[Exit: Purchase Completed]
+            C -->|No| E[Send SMS: You left something behind]
+            E --> F[Wait 4 Hours]
+            F --> G{{Has User Purchased?}}
+            G -->|Yes| D
+            G -->|No| H[Send Email: Still want that glow? 10% off]
+            H --> I[Wait 2 Days]
+            I --> J{{Has User Purchased?}}
+            J -->|Yes| D
+            J -->|No| K[Send Push: Your GlowKit is waiting]
+            K --> L[Exit: No Response After 3 Touches]
+            {highlight_class_def}
+            {highlight_command_def}
+            ''',
+        "PulseFit": f'''graph TD
+            A[User Signs Up for App] --> B[Wait 24 Hours]
+            B --> C{{User Active in App?}}
+            C -->|Yes| D[Exit: User Engaged]
+            C -->|No| E[Send Push: Ready to crush your fitness goals?]
+            E --> F[Wait 3 Days]
+            F --> G{{User Active in App?}}
+            G -->|Yes| D
+            G -->|No| H[Send Email: 5 Quick Workouts to Get Started]
+            H --> I[Wait 1 Week]
+            I --> J{{User Active in App?}}
+            J -->|Yes| D
+            J -->|No| K[Send SMS: Get 30% off premium]
+            K --> L[Exit: User Remains Inactive]
+            {highlight_class_def}
+            {highlight_command_def}
+            ''',
+        "JetQuest": f'''graph TD
+            A[User Browses Flight Deals] --> B[Wait 1 Hour]
+            B --> C{{User Booked Flight?}}
+            C -->|Yes| D[Exit: Booking Completed]
+            C -->|No| E[Send Email: Your flight deal expires soon]
+            E --> F[Wait 6 Hours]
+            F --> G{{User Booked Flight?}}
+            G -->|Yes| D
+            G -->|No| H[Send SMS: Last chance - save $200]
+            H --> I[Wait 1 Day]
+            I --> J{{User Booked Flight?}}
+            J -->|Yes| D
+            J -->|No| K[Send Retargeting Ad: Similar destinations]
+            K --> L[Exit: Deal Expired]
+            {highlight_class_def}
+            {highlight_command_def}
+            ''',
+        "LeadSync": f'''graph TD
+            A[User Starts Free Trial] --> B[Wait 2 Days]
+            B --> C{{User Setup Complete?}}
+            C -->|Yes| D[Exit: Trial Converted]
+            C -->|No| E[Send Email: Complete your setup in 5 minutes]
+            E --> F[Wait 3 Days]
+            F --> G{{User Active in Trial?}}
+            G -->|Yes| D
+            G -->|No| H[Send In-App: Need help? Quick guide]
+            H --> I[Wait 1 Week]
+            I --> J{{User Engaged?}}
+            J -->|Yes| D
+            J -->|No| K[Alert CSM: High-value prospect needs attention]
+            K --> L[Exit: Trial Expired]
+            {highlight_class_def}
+            {highlight_command_def}
+            '''
+    }
+    return flows.get(persona_name, "")
+
+# --- Mermaid Renderer ---
+st.subheader(f"Customer Journey: {persona}")
+current_flow = get_journey_flow(persona, highlight_class, highlight_command)
+
+mermaid_html = f"""
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/mermaid@9.4.3/dist/mermaid.min.js"></script>
+    <style>
+        body {{ font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #ffffff; }}
+        .mermaid {{ text-align: center; }}
+    </style>
+</head>
+<body>
+    <div class="mermaid">
+{current_flow}
+    </div>
+    <script>
+        mermaid.initialize({{
+            startOnLoad: true,
+            theme: 'default',
+            securityLevel: 'loose',
+            flowchart: {{ useMaxWidth: true, htmlLabels: true, curve: 'basis' }}
+        }});
+    </script>
+</body>
+</html>
+"""
+
+components.html(mermaid_html, height=700, scrolling=True)
+
+# --- Summary Card ---
+summaries = {
+    "GlowSkin": "Recover abandoned carts using SMS, Email, and Push with incentives to drive conversion.",
+    "PulseFit": "Re-engage inactive app signups using push, educational email, and promo SMS.",
+    "JetQuest": "Follow up with browsing users using email, SMS, and retargeting to drive bookings.",
+    "LeadSync": "Activate trial users with email nudges, in-app guidance, and CSM alerts."
+}
+
+st.markdown(f"**Use Case Summary:** {summaries.get(persona, 'N/A')}")
 
 st.markdown("### What You're Seeing")
 st.info("""
@@ -282,6 +294,10 @@ Use the AI suggestions to understand optimal engagement points in the journey.
 
 st.info("💡 **Key Insight**: Notice how Iterable creates a unified customer experience by coordinating all your existing tools, rather than replacing them.")
 
+# --- Event Status Display ---
+if highlight_node:
+    st.info(f"**Event Simulation:** {selected_event} - Highlighted in journey diagram")
+
 # --- AI-Powered Event & Journey Intelligence ---
 st.markdown("---")
 st.subheader("AI-Powered Marketing Intelligence")
@@ -294,7 +310,7 @@ with col1:
         st.session_state.journey_optimization = ""
         st.session_state.ab_test_strategy = ""
         
-        with st.spinner("Analyzing customer behavior and generating event-specific recommendations..."):
+        with st.spinner("Generating event suggestions..."):
             try:
                 client = openai.OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
                 timeline = st.session_state.event_timeline
@@ -387,6 +403,65 @@ if st.session_state.event_suggestion:
 if st.session_state.journey_optimization:
     st.success("**Journey Optimization Strategy:**")
     st.markdown(st.session_state.journey_optimization)
+
+# --- A/B Testing Strategy Center ---
+st.markdown("---")
+st.subheader("A/B Testing Strategy Center")
+
+with st.expander("Scientific Testing Framework", expanded=False):
+    st.markdown("""
+    **Validate Your Marketing Decisions with Data**
+    
+    Iterable's A/B testing capabilities help you make data-driven decisions about your customer engagement strategy.
+    This module generates specific test recommendations based on your customer journey and current events.
+    """)
+    
+    if st.session_state.event_timeline:
+        if st.button("Generate A/B Test Strategy"):
+            # Clear other AI responses
+            st.session_state.event_suggestion = ""
+            st.session_state.journey_optimization = ""
+            
+            with st.spinner("Designing A/B test strategy..."):
+                try:
+                    client = openai.OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+                    timeline = st.session_state.event_timeline
+                    event_history = ", ".join(timeline) if timeline else "No events simulated."
+
+                    prompt = f"""
+You are a conversion optimization expert designing A/B tests for Iterable's platform. Based on the customer persona '{persona}' and their journey: {event_history}
+
+Design a comprehensive A/B testing strategy including:
+
+1. **Primary Test Hypothesis** - What you want to prove/disprove
+2. **Test Variables** - Specific elements to test (subject lines, timing, channels, content)
+3. **Success Metrics** - How to measure test performance 
+4. **Sample Size & Duration** - Statistical requirements for valid results
+5. **Expected Impact** - Predicted improvement ranges
+
+Focus on tests that would have the highest impact on conversion rates and customer experience for this specific journey and persona.
+
+Make recommendations practical and implementable within Iterable's testing framework.
+                    """
+
+                    response = client.chat.completions.create(
+                        model="gpt-4",
+                        messages=[
+                            {"role": "system", "content": "You are a conversion optimization expert specializing in A/B testing and statistical analysis for marketing campaigns."},
+                            {"role": "user", "content": prompt}
+                        ],
+                        temperature=0.7,
+                        max_tokens=600
+                    )
+
+                    st.session_state.ab_test_strategy = response.choices[0].message.content
+                    st.rerun()
+
+                except Exception as e:
+                    st.error(f"Error generating A/B test strategy: {str(e)}")
+                    st.info("Please check your OpenAI API key configuration in Streamlit secrets.")
+    else:
+        st.info("👆 **Build a customer journey above to get personalized A/B testing recommendations**")
 
 # --- Business Impact Calculator ---
 st.markdown("---")
@@ -652,65 +727,6 @@ with st.expander("Strategic Competitive Positioning", expanded=False):
                 iterable_content += f"\n**Platform Advantages:**\n{iterable_context['general']}"
                 
                 st.success(iterable_content if iterable_content else "Iterable addresses your key priorities with modern platform capabilities.")
-
-# --- A/B Testing Module ---
-st.markdown("---")
-st.subheader("A/B Testing Strategy Center")
-
-with st.expander("Scientific Testing Framework", expanded=False):
-    st.markdown("""
-    **Validate Your Marketing Decisions with Data**
-    
-    Iterable's A/B testing capabilities help you make data-driven decisions about your customer engagement strategy.
-    This module generates specific test recommendations based on your customer journey and current events.
-    """)
-    
-    if st.session_state.event_timeline:
-        if st.button("Generate A/B Test Strategy"):
-            # Clear other AI responses
-            st.session_state.event_suggestion = ""
-            st.session_state.journey_optimization = ""
-            
-            with st.spinner("Designing A/B test strategy..."):
-                try:
-                    client = openai.OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
-                    timeline = st.session_state.event_timeline
-                    event_history = ", ".join(timeline) if timeline else "No events simulated."
-
-                    prompt = f"""
-You are a conversion optimization expert designing A/B tests for Iterable's platform. Based on the customer persona '{persona}' and their journey: {event_history}
-
-Design a comprehensive A/B testing strategy including:
-
-1. **Primary Test Hypothesis** - What you want to prove/disprove
-2. **Test Variables** - Specific elements to test (subject lines, timing, channels, content)
-3. **Success Metrics** - How to measure test performance 
-4. **Sample Size & Duration** - Statistical requirements for valid results
-5. **Expected Impact** - Predicted improvement ranges
-
-Focus on tests that would have the highest impact on conversion rates and customer experience for this specific journey and persona.
-
-Make recommendations practical and implementable within Iterable's testing framework.
-                    """
-
-                    response = client.chat.completions.create(
-                        model="gpt-4",
-                        messages=[
-                            {"role": "system", "content": "You are a conversion optimization expert specializing in A/B testing and statistical analysis for marketing campaigns."},
-                            {"role": "user", "content": prompt}
-                        ],
-                        temperature=0.7,
-                        max_tokens=600
-                    )
-
-                    st.session_state.ab_test_strategy = response.choices[0].message.content
-                    st.rerun()
-
-                except Exception as e:
-                    st.error(f"Error generating A/B test strategy: {str(e)}")
-                    st.info("Please check your OpenAI API key configuration in Streamlit secrets.")
-    else:
-        st.info("👆 **Build a customer journey above to get personalized A/B testing recommendations**")
 
 # Display A/B Test Strategy
 if st.session_state.ab_test_strategy:
