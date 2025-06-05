@@ -48,7 +48,6 @@ if persona != st.session_state.current_persona:
     st.session_state.campaign_suggestion = ""
     st.session_state.journey_optimization = ""
     st.session_state.ab_test_strategy = ""
-    st.session_state.integration_analysis = ""
     st.session_state.business_impact = ""
     st.rerun()
 
@@ -88,8 +87,6 @@ if "journey_optimization" not in st.session_state:
     st.session_state.journey_optimization = ""
 if "ab_test_strategy" not in st.session_state:
     st.session_state.ab_test_strategy = ""
-if "integration_analysis" not in st.session_state:
-    st.session_state.integration_analysis = ""
 if "business_impact" not in st.session_state:
     st.session_state.business_impact = ""
 
@@ -103,7 +100,6 @@ if st.button("Reset Timeline"):
     st.session_state.campaign_suggestion = ""
     st.session_state.journey_optimization = ""
     st.session_state.ab_test_strategy = ""
-    st.session_state.integration_analysis = ""
     st.session_state.business_impact = ""
 
 if st.session_state.event_timeline:
@@ -332,7 +328,6 @@ with st.expander("A/B Test Setup & Analysis", expanded=False):
         # Clear other AI responses
         st.session_state.campaign_suggestion = ""
         st.session_state.journey_optimization = ""
-        st.session_state.integration_analysis = ""
         
         with st.spinner("Generating AI-powered test strategy..."):
             try:
@@ -446,6 +441,11 @@ with st.expander("Why Iterable is Your Marketing Command Center", expanded=False
     # Dynamic Business Impact Calculator
     if data_sources and activation_channels and current_challenges:
         if st.button("Calculate Iterable's Business Impact"):
+            # Clear other AI responses  
+            st.session_state.campaign_suggestion = ""
+            st.session_state.journey_optimization = ""
+            st.session_state.ab_test_strategy = ""
+            
             with st.spinner("Calculating personalized business impact..."):
                 try:
                     client = openai.OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
@@ -469,7 +469,7 @@ You are an Iterable ROI analyst. Based on this prospect's current situation, cal
 
 Provide specific percentages and dollar amounts where possible. Make it realistic but compelling.
 
-Format as a brief, scannable list with numbers.
+IMPORTANT: Format as a brief, scannable list with numbers. Use "dollars" instead of dollar signs to avoid formatting issues. Avoid using asterisks in your response.
                     """
 
                     response = client.chat.completions.create(
@@ -492,61 +492,6 @@ Format as a brief, scannable list with numbers.
     if hasattr(st.session_state, 'business_impact') and st.session_state.business_impact:
         st.markdown("**Calculated Business Impact:**")
         st.info(st.session_state.business_impact)
-
-    if st.button("Generate Iterable ROI Assessment"):
-        # Clear other AI responses
-        st.session_state.campaign_suggestion = ""
-        st.session_state.journey_optimization = ""
-        st.session_state.ab_test_strategy = ""
-        
-        with st.spinner("Calculating Iterable's business impact..."):
-            try:
-                client = openai.OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
-                
-                prompt = f"""
-You are an Iterable solutions architect presenting to a prospective enterprise client. Create a compelling ROI assessment that shows Iterable's unique value:
-
-**Client's Current State:**
-- Persona: {persona}
-- Current Tools: {', '.join(data_sources)}
-- Current Challenges: {', '.join(current_challenges)}
-- Target Channels: {', '.join(activation_channels)}
-- Team Size: {team_size}
-- Customer Journey Context: {', '.join(st.session_state.event_timeline) if st.session_state.event_timeline else 'Standard journey'}
-
-**Focus on Iterable's Competitive Advantages:**
-1. **Cross-Channel Orchestration** - How Iterable coordinates all channels in real-time (unlike point solutions)
-2. **Unified Customer Profiles** - Single view across all touchpoints 
-3. **AI-Powered Optimization** - Automatic channel, timing, and content optimization
-4. **Workflow Automation** - Replace manual processes with intelligent automation
-5. **Real-Time Decisioning** - Instant responses to customer behavior
-6. **ROI Impact** - Specific business outcomes and timeframes
-
-**Provide:**
-1. **Current State Problems** - What's broken with their disconnected stack
-2. **Iterable's Solution** - How we solve these specific problems uniquely  
-3. **Business Impact** - Quantified improvements (conversion rates, efficiency, revenue)
-4. **Implementation Roadmap** - Clear path to value realization
-5. **Competitive Differentiation** - Why Iterable vs. other solutions
-
-Make this sound like a compelling business case that would convince a CMO to invest.
-                """
-
-                response = client.chat.completions.create(
-                    model="gpt-4",
-                    messages=[
-                        {"role": "system", "content": "You are an Iterable solutions architect specializing in enterprise ROI assessments and competitive positioning."},
-                        {"role": "user", "content": prompt}
-                    ],
-                    temperature=0.7,
-                    max_tokens=800
-                )
-
-                st.session_state.integration_analysis = response.choices[0].message.content
-                st.rerun()
-
-            except Exception as e:
-                st.error(f"Error generating ROI assessment: {str(e)}")
 
     # Enhanced Iterable Value Proposition Visualization
     if data_sources and activation_channels:
@@ -589,7 +534,9 @@ Make this sound like a compelling business case that would convince a CMO to inv
             """)
         
         # Overall impact summary
-        st.markdown("**Transformation Summary:**")
+        st.markdown("**Industry Benchmarks - Typical Iterable Impact:**")
+        st.caption("*These are average improvements seen across Iterable's customer base, not specific to your configuration above.*")
+        
         col1, col2, col3 = st.columns(3)
         
         with col1:
@@ -607,7 +554,6 @@ with col1:
         # Clear other AI responses
         st.session_state.journey_optimization = ""
         st.session_state.ab_test_strategy = ""
-        st.session_state.integration_analysis = ""
         
         with st.spinner("Generating campaign suggestions..."):
             try:
@@ -656,7 +602,6 @@ with col2:
         # Clear other AI responses
         st.session_state.campaign_suggestion = ""
         st.session_state.ab_test_strategy = ""
-        st.session_state.integration_analysis = ""
         
         with st.spinner("Analyzing journey optimization..."):
             try:
@@ -707,7 +652,3 @@ if st.session_state.journey_optimization:
 if st.session_state.ab_test_strategy:
     st.success("**A/B Test Strategy:**")
     st.markdown(st.session_state.ab_test_strategy)
-
-if st.session_state.integration_analysis:
-    st.success("**Iterable ROI Assessment:**")
-    st.markdown(st.session_state.integration_analysis)
