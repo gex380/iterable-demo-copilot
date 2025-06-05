@@ -29,16 +29,45 @@ You can reset the timeline at any time, or experiment with different personas an
 
 # --- Persona Selector ---
 persona_list = ["GlowSkin", "PulseFit", "JetQuest", "LeadSync"]
+
+# Reset everything when persona changes
+if "current_persona" not in st.session_state:
+    st.session_state.current_persona = persona_list[0]
+
 persona = st.sidebar.selectbox("Choose a Persona:", persona_list)
 
+# Check if persona changed and reset if so
+if persona != st.session_state.current_persona:
+    st.session_state.current_persona = persona
+    st.session_state.event_timeline = []
+    st.session_state.next_node_id = ""
+    st.session_state.next_node_reason = ""
+    st.rerun()
+
 # --- Event Selector ---
-event_options = {
-    "GlowSkin": ["Cart Abandoned", "Email Opened", "Push Ignored"],
-    "PulseFit": ["User Inactive", "Push Sent", "Email Unopened"],
-    "JetQuest": ["Browsed Flight", "No Booking", "Retargeting Ad"],
-    "LeadSync": ["Trial Started", "No Setup", "No Engagement"]
-}
-selected_event = st.selectbox("Simulate User Event:", event_options.get(persona, []))
+event_options = [
+    "Cart Abandoned",
+    "Email Opened", 
+    "Email Unopened",
+    "Push Notification Sent",
+    "Push Notification Ignored",
+    "SMS Sent",
+    "SMS Ignored",
+    "User Inactive",
+    "User Engaged",
+    "Browsed Product/Service",
+    "Made Purchase",
+    "Left Review",
+    "Shared Content",
+    "Unsubscribed",
+    "Trial Started",
+    "Trial Expired",
+    "Subscription Cancelled",
+    "Support Ticket Created",
+    "App Downloaded",
+    "Account Created"
+]
+selected_event = st.selectbox("Simulate User Event:", event_options)
 
 # --- Timeline Tracking ---
 if "event_timeline" not in st.session_state:
@@ -65,10 +94,42 @@ else:
 
 # --- Event Highlight Mapping ---
 event_to_node_map = {
-    "GlowSkin": {"Cart Abandoned": "E", "Email Opened": "H", "Push Ignored": "K"},
-    "PulseFit": {"User Inactive": "E", "Push Sent": "E", "Email Unopened": "H"},
-    "JetQuest": {"Browsed Flight": "A", "No Booking": "F", "Retargeting Ad": "K"},
-    "LeadSync": {"Trial Started": "A", "No Setup": "E", "No Engagement": "H"}
+    "GlowSkin": {
+        "Cart Abandoned": "E", "Email Opened": "H", "Push Notification Ignored": "K",
+        "Email Unopened": "H", "Push Notification Sent": "K", "SMS Sent": "E",
+        "SMS Ignored": "E", "User Inactive": "B", "User Engaged": "D",
+        "Browsed Product/Service": "A", "Made Purchase": "D", "Left Review": "D",
+        "Shared Content": "D", "Unsubscribed": "L", "Trial Started": "A",
+        "Trial Expired": "L", "Subscription Cancelled": "L", "Support Ticket Created": "H",
+        "App Downloaded": "A", "Account Created": "A"
+    },
+    "PulseFit": {
+        "Cart Abandoned": "E", "Email Opened": "H", "Push Notification Ignored": "K",
+        "Email Unopened": "H", "Push Notification Sent": "E", "SMS Sent": "K",
+        "SMS Ignored": "K", "User Inactive": "E", "User Engaged": "D",
+        "Browsed Product/Service": "A", "Made Purchase": "D", "Left Review": "D",
+        "Shared Content": "D", "Unsubscribed": "L", "Trial Started": "A",
+        "Trial Expired": "L", "Subscription Cancelled": "L", "Support Ticket Created": "H",
+        "App Downloaded": "A", "Account Created": "A"
+    },
+    "JetQuest": {
+        "Cart Abandoned": "E", "Email Opened": "E", "Push Notification Ignored": "K",
+        "Email Unopened": "E", "Push Notification Sent": "K", "SMS Sent": "H",
+        "SMS Ignored": "H", "User Inactive": "B", "User Engaged": "D",
+        "Browsed Product/Service": "A", "Made Purchase": "D", "Left Review": "D",
+        "Shared Content": "D", "Unsubscribed": "L", "Trial Started": "A",
+        "Trial Expired": "L", "Subscription Cancelled": "L", "Support Ticket Created": "E",
+        "App Downloaded": "A", "Account Created": "A"
+    },
+    "LeadSync": {
+        "Cart Abandoned": "E", "Email Opened": "E", "Push Notification Ignored": "K",
+        "Email Unopened": "E", "Push Notification Sent": "H", "SMS Sent": "K",
+        "SMS Ignored": "K", "User Inactive": "E", "User Engaged": "D",
+        "Browsed Product/Service": "A", "Made Purchase": "D", "Left Review": "D",
+        "Shared Content": "D", "Unsubscribed": "L", "Trial Started": "A",
+        "Trial Expired": "L", "Subscription Cancelled": "L", "Support Ticket Created": "E",
+        "App Downloaded": "A", "Account Created": "A"
+    }
 }
 
 highlight_node = st.session_state.next_node_id or event_to_node_map.get(persona, {}).get(selected_event, "")
