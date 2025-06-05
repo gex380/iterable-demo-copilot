@@ -8,7 +8,7 @@ st.set_page_config(page_title="Iterable Demo Copilot", layout="wide")
 st.title("Iterable Demo Copilot")
 
 # --- Onboarding Guide ---
-with st.expander("📘 How to Use This Demo", expanded=True):
+with st.expander("How to Use This Demo", expanded=True):
     st.markdown("""
 **Welcome to the Iterable Demo Copilot.**  
 This tool simulates how a Solutions Consultant at Iterable might demonstrate customer journeys and real-time campaign recommendations using AI.
@@ -18,9 +18,10 @@ This tool simulates how a Solutions Consultant at Iterable might demonstrate cus
 2. **Choose an event** to simulate user behavior (e.g., cart abandonment).
 3. Click **'Add Event to Timeline'** to build up a sequence of events.
 4. View the **journey diagram**, which highlights key touchpoints and stages.
-5. Click **'Ask AI for Campaign Suggestions'** to receive campaign recommendations.
-6. Click **'Ask AI for Journey Optimization'** to get strategic journey improvements.
-7. The recommended nodes will be **highlighted in yellow**.
+5. Click **'Campaign Suggestions'** to receive campaign recommendations.
+6. Click **'Journey Optimization'** to get strategic journey improvements.
+7. Use **'A/B Testing Center'** to generate test strategies based on your timeline.
+8. The recommended nodes will be **highlighted in yellow**.
 
 You can reset the timeline at any time, or experiment with different personas and user behaviors.
     """)
@@ -41,6 +42,9 @@ if persona != st.session_state.current_persona:
     st.session_state.next_node_id = ""
     st.session_state.campaign_suggestion = ""
     st.session_state.journey_optimization = ""
+    st.session_state.ab_test_strategy = ""
+    st.session_state.performance_analysis = ""
+    st.session_state.integration_analysis = ""
     st.rerun()
 
 # --- Event Selector ---
@@ -77,6 +81,12 @@ if "campaign_suggestion" not in st.session_state:
     st.session_state.campaign_suggestion = ""
 if "journey_optimization" not in st.session_state:
     st.session_state.journey_optimization = ""
+if "ab_test_strategy" not in st.session_state:
+    st.session_state.ab_test_strategy = ""
+if "performance_analysis" not in st.session_state:
+    st.session_state.performance_analysis = ""
+if "integration_analysis" not in st.session_state:
+    st.session_state.integration_analysis = ""
 
 if st.button("Add Event to Timeline"):
     if selected_event not in st.session_state.event_timeline:
@@ -87,6 +97,9 @@ if st.button("Reset Timeline"):
     st.session_state.next_node_id = ""
     st.session_state.campaign_suggestion = ""
     st.session_state.journey_optimization = ""
+    st.session_state.ab_test_strategy = ""
+    st.session_state.performance_analysis = ""
+    st.session_state.integration_analysis = ""
 
 if st.session_state.event_timeline:
     st.markdown("### Simulated Event Timeline")
@@ -252,13 +265,240 @@ Use the AI suggestions to understand optimal engagement points in the journey.
 
 # --- Event Status Display ---
 if highlight_node:
-    st.info(f"🎯 **Event Simulation:** {selected_event} - Highlighted in journey diagram")
+    st.info(f"**Event Simulation:** {selected_event} - Highlighted in journey diagram")
+
+# --- A/B Testing Module ---
+st.markdown("---")
+st.subheader("A/B Testing Center")
+
+with st.expander("A/B Test Setup & Analysis", expanded=False):
+    st.markdown("""
+    **Smart A/B Testing with AI-Powered Insights**  
+    Generate test hypotheses, calculate sample sizes, and get AI recommendations based on your current timeline and persona behavior.
+    
+    **How Timeline Events Affect Testing:**
+    - **Cart Abandoned + Email Unopened**: Tests focus on subject line optimization and send time
+    - **Push Ignored + SMS Received**: Tests emphasize message content and channel preference  
+    - **Multiple Touchpoints**: Tests prioritize cross-channel coordination and frequency capping
+    - **High Engagement Events**: Tests explore upsell opportunities and personalization depth
+    """)
+    
+    # A/B Test Configuration
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown("**Test Configuration**")
+        test_type = st.selectbox("Test Type:", [
+            "Subject Line Variation", 
+            "Send Time Optimization", 
+            "Content Personalization",
+            "CTA Button Text",
+            "Email Template Design",
+            "Discount Amount"
+        ])
+        
+        current_metric = st.number_input("Current Conversion Rate (%)", min_value=0.1, max_value=50.0, value=2.5, step=0.1)
+        expected_lift = st.number_input("Expected Lift (%)", min_value=1.0, max_value=100.0, value=15.0, step=1.0)
+        confidence_level = st.selectbox("Confidence Level:", ["90%", "95%", "99%"], index=1)
+        
+    with col2:
+        st.markdown("**Sample Size Calculator**")
+        # Simple sample size calculation
+        base_rate = current_metric / 100
+        lift_rate = (current_metric + expected_lift) / 100
+        
+        # Simplified statistical calculation
+        import math
+        z_score = {"90%": 1.645, "95%": 1.96, "99%": 2.576}[confidence_level]
+        pooled_rate = (base_rate + lift_rate) / 2
+        sample_size = int((2 * pooled_rate * (1 - pooled_rate) * (z_score / (lift_rate - base_rate))**2))
+        
+        st.metric("Required Sample Size (per variant):", f"{sample_size:,}")
+        st.metric("Total Test Duration:", f"{math.ceil(sample_size / 1000)} days*")
+        st.caption("*Assuming 1,000 sends per day")
+
+    # Timeline Context for Testing
+    if st.session_state.event_timeline:
+        st.markdown("**Current Timeline Context:**")
+        timeline_str = " → ".join(st.session_state.event_timeline)
+        st.write(f"**{timeline_str}**")
+        st.caption("AI will use this context to generate relevant test strategies")
+
+    if st.button("Generate A/B Test Strategy"):
+        with st.spinner("Generating AI-powered test strategy..."):
+            try:
+                client = openai.OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+                
+                prompt = f"""
+You are a senior CRO (Conversion Rate Optimization) expert at Iterable. Generate a comprehensive A/B testing strategy for:
+
+**Test Details:**
+- Persona: {persona}
+- Test Type: {test_type}
+- Current Conversion Rate: {current_metric}%
+- Expected Lift: {expected_lift}%
+- Required Sample Size: {sample_size:,} per variant
+
+**Critical Context - User Timeline:** {', '.join(st.session_state.event_timeline) if st.session_state.event_timeline else 'No specific events'}
+
+**Timeline Impact on Testing:**
+Based on the user's event timeline, explain how their specific behavior pattern should influence the test design. For example:
+- If they abandoned cart but opened emails: focus on email content tests
+- If they ignored push notifications: test alternative messaging channels
+- If they engaged with discounts: test pricing and offer strategies
+
+Provide:
+1. **Test Hypothesis** - Clear, testable prediction based on timeline behavior
+2. **Variant Recommendations** - Specific A vs B suggestions tailored to their journey stage  
+3. **Success Metrics** - Primary and secondary KPIs to track
+4. **Timeline-Specific Insights** - How their behavior pattern affects test design
+5. **Risk Assessment** - Potential downsides to watch for
+6. **Next Test Ideas** - Follow-up experiments based on results
+
+Make recommendations specific to {persona} persona, {test_type} testing, and their timeline behavior pattern.
+                """
+
+                response = client.chat.completions.create(
+                    model="gpt-4",
+                    messages=[
+                        {"role": "system", "content": "You are a senior CRO expert specializing in email marketing optimization and statistical testing methodology."},
+                        {"role": "user", "content": prompt}
+                    ],
+                    temperature=0.7,
+                    max_tokens=700
+                )
+
+                st.session_state.ab_test_strategy = response.choices[0].message.content
+                st.rerun()
+
+            except Exception as e:
+                st.error(f"Error generating A/B test strategy: {str(e)}")
+
+# --- MarTech Integration Visualizer ---
+st.markdown("---")
+st.subheader("MarTech Integration Architecture")
+
+with st.expander("Data Flow & Integration Analysis", expanded=False):
+    st.markdown("""
+    **Enterprise MarTech Stack Integration**  
+    Visualize how Iterable fits into your existing technology ecosystem and data flow requirements.
+    """)
+    
+    # Integration Configuration
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown("**Data Sources**")
+        data_sources = st.multiselect("Select Your Data Sources:", [
+            "Salesforce CRM",
+            "Shopify/E-commerce Platform", 
+            "Google Analytics",
+            "Customer Data Platform (CDP)",
+            "Product Analytics (Mixpanel/Amplitude)",
+            "Support System (Zendesk)",
+            "Billing System (Stripe)",
+            "Data Warehouse (Snowflake/BigQuery)",
+            "Mobile App Events",
+            "Website Behavioral Data"
+        ], default=["Salesforce CRM", "Shopify/E-commerce Platform"])
+        
+        integration_complexity = st.selectbox("Integration Complexity:", [
+            "Simple (API-only)",
+            "Moderate (API + Webhooks)", 
+            "Complex (Real-time + Batch + Custom)"
+        ])
+        
+    with col2:
+        st.markdown("**Activation Channels**")
+        activation_channels = st.multiselect("Select Activation Channels:", [
+            "Email",
+            "SMS", 
+            "Push Notifications",
+            "In-App Messages",
+            "Direct Mail",
+            "Webhooks to External Systems",
+            "Facebook Custom Audiences",
+            "Google Ads Customer Match"
+        ], default=["Email", "SMS", "Push Notifications"])
+        
+        real_time_requirements = st.selectbox("Real-time Requirements:", [
+            "Batch processing (daily/hourly)",
+            "Near real-time (5-15 minutes)",
+            "Real-time (under 1 minute)"
+        ])
+
+    if st.button("Generate Integration Architecture"):
+        with st.spinner("Analyzing integration requirements..."):
+            try:
+                client = openai.OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+                
+                prompt = f"""
+You are a MarTech solutions architect at Iterable. Create a comprehensive integration analysis for:
+
+**Client Profile:**
+- Persona: {persona}
+- Data Sources: {', '.join(data_sources)}
+- Activation Channels: {', '.join(activation_channels)}
+- Integration Complexity: {integration_complexity}
+- Real-time Requirements: {real_time_requirements}
+- Current User Journey: {', '.join(st.session_state.event_timeline) if st.session_state.event_timeline else 'Standard journey'}
+
+Provide:
+1. **Data Flow Architecture** - How data moves from sources through Iterable to activation
+2. **Integration Recommendations** - Specific APIs, webhooks, and connectors needed
+3. **Implementation Timeline** - Phases and estimated timeframes
+4. **Technical Requirements** - Development resources and prerequisites  
+5. **Data Governance** - Privacy, compliance, and data quality considerations
+6. **Performance Optimization** - Best practices for scale and reliability
+
+Focus on practical, enterprise-grade recommendations that align with their complexity level and real-time requirements.
+                """
+
+                response = client.chat.completions.create(
+                    model="gpt-4",
+                    messages=[
+                        {"role": "system", "content": "You are a MarTech solutions architect specializing in enterprise integrations and data flow optimization."},
+                        {"role": "user", "content": prompt}
+                    ],
+                    temperature=0.7,
+                    max_tokens=700
+                )
+
+                st.session_state.integration_analysis = response.choices[0].message.content
+                st.rerun()
+
+            except Exception as e:
+                st.error(f"Error generating integration analysis: {str(e)}")
+
+    # Simple Data Flow Visualization
+    if data_sources and activation_channels:
+        st.markdown("**Data Flow Visualization**")
+        
+        # Create a simple text-based flow diagram
+        flow_diagram = "**Data Sources** → **Iterable Platform** → **Activation Channels**\n\n"
+        
+        flow_diagram += "**INBOUND:**\n"
+        for source in data_sources:
+            flow_diagram += f"• {source} → Real-time API/Webhook → Iterable\n"
+        
+        flow_diagram += f"\n**PROCESSING:**\n"
+        flow_diagram += f"• Journey Logic ({persona} persona)\n"
+        flow_diagram += f"• A/B Testing & Optimization\n"
+        flow_diagram += f"• Personalization Engine\n"
+        
+        flow_diagram += f"\n**OUTBOUND:**\n"
+        for channel in activation_channels:
+            flow_diagram += f"• Iterable → {channel} Delivery\n"
+            
+        flow_diagram += f"\n**SYNC FREQUENCY:** {real_time_requirements}"
+        
+        st.code(flow_diagram, language=None)
 
 # --- AI Suggestion Buttons ---
-col1, col2 = st.columns(2)
+col1, col2, col3 = st.columns(3)
 
 with col1:
-    if st.button("🤖 Ask AI for Campaign Suggestions", use_container_width=True):
+    if st.button("Campaign Suggestions", use_container_width=True):
         with st.spinner("Generating campaign suggestions..."):
             try:
                 client = openai.OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
@@ -302,7 +542,7 @@ Format your response clearly with headers.
                 st.info("Please check your OpenAI API key configuration in Streamlit secrets.")
 
 with col2:
-    if st.button("🚀 Ask AI for Journey Optimization", use_container_width=True):
+    if st.button("Journey Optimization", use_container_width=True):
         with st.spinner("Analyzing journey optimization..."):
             try:
                 client = openai.OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
@@ -339,11 +579,62 @@ Focus on practical, actionable insights that would improve conversion rates and 
                 st.error(f"Error generating journey optimization: {str(e)}")
                 st.info("Please check your OpenAI API key configuration in Streamlit secrets.")
 
+with col3:
+    if st.button("Performance Analysis", use_container_width=True):
+        with st.spinner("Analyzing campaign performance..."):
+            try:
+                client = openai.OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+                timeline = st.session_state.event_timeline
+                event_history = ", ".join(timeline) if timeline else "No events simulated."
+
+                prompt = f"""
+You are a marketing analytics expert at Iterable. Analyze the performance implications for persona '{persona}' with event timeline:
+{event_history}
+
+Provide a comprehensive performance analysis including:
+1. **Key Metrics to Track** - Most important KPIs for this journey
+2. **Benchmarking** - Industry standards for {persona} type campaigns
+3. **Red Flags** - Warning signs to monitor
+4. **Optimization Opportunities** - Quick wins for better performance
+5. **Executive Summary** - High-level insights for leadership
+
+Focus on actionable, data-driven recommendations.
+                """
+
+                response = client.chat.completions.create(
+                    model="gpt-4",
+                    messages=[
+                        {"role": "system", "content": "You are a marketing analytics expert specializing in campaign performance and ROI optimization."},
+                        {"role": "user", "content": prompt}
+                    ],
+                    temperature=0.7,
+                    max_tokens=600
+                )
+
+                st.session_state.performance_analysis = response.choices[0].message.content
+                st.rerun()
+
+            except Exception as e:
+                st.error(f"Error generating performance analysis: {str(e)}")
+                st.info("Please check your OpenAI API key configuration in Streamlit secrets.")
+
 # --- Display AI Responses ---
 if st.session_state.campaign_suggestion:
-    st.success("💡 **Campaign Suggestion:**")
+    st.success("**Campaign Suggestion:**")
     st.markdown(st.session_state.campaign_suggestion)
 
 if st.session_state.journey_optimization:
-    st.success("🚀 **Journey Optimization:**")
+    st.success("**Journey Optimization:**")
     st.markdown(st.session_state.journey_optimization)
+
+if st.session_state.ab_test_strategy:
+    st.success("**A/B Test Strategy:**")
+    st.markdown(st.session_state.ab_test_strategy)
+
+if st.session_state.performance_analysis:
+    st.success("**Performance Analysis:**")
+    st.markdown(st.session_state.performance_analysis)
+
+if st.session_state.integration_analysis:
+    st.success("**Integration Architecture Analysis:**")
+    st.markdown(st.session_state.integration_analysis)
