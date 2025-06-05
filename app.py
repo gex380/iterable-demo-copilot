@@ -615,80 +615,124 @@ with st.expander("Strategic Competitive Positioning", expanded=False):
 
     # Competitive Comparison Matrix
     if primary_competitor:
-        st.markdown(f"**Iterable vs. {primary_competitor} - Key Differentiators:**")
+        st.markdown(f"**Iterable vs. {primary_competitor} - Platform Comparison:**")
         
         # Define competitive advantages for each competitor
-        competitive_advantages = {
+        competitive_details = {
             "Braze": {
-                "Iterable Advantage": "Workflow Flexibility & Speed to Value",
-                "Key Differentiator": "Visual workflow builder vs. code-heavy implementation",
-                "Implementation": "Weeks vs. Months",
-                "Data Model": "Flexible, real-time updates vs. rigid schema",
-                "Pricing": "Transparent, usage-based vs. complex enterprise pricing"
+                "advantage": "Workflow Flexibility & Implementation Speed",
+                "competitor_approach": "Code-heavy implementation requiring technical resources",
+                "competitor_timeline": "Months of development and technical setup",
+                "competitor_data": "Rigid data schema with limited flexibility",
+                "competitor_pricing": "Complex enterprise pricing with hidden costs",
+                "iterable_approach": "Visual workflow builder with drag-and-drop simplicity",
+                "iterable_timeline": "Weeks to go live with self-service setup",
+                "iterable_data": "Flexible, real-time data model with easy updates",
+                "iterable_pricing": "Transparent, usage-based pricing with predictable scaling"
             },
             "Klaviyo": {
-                "Iterable Advantage": "Enterprise Scale & Cross-Channel Depth", 
-                "Key Differentiator": "True omnichannel vs. email-centric with add-ons",
-                "Implementation": "Enterprise-ready vs. SMB-focused architecture",
-                "Data Model": "Advanced segmentation vs. basic e-commerce focus",
-                "Pricing": "Predictable scaling vs. rapid price increases"
+                "advantage": "Enterprise Scale & True Omnichannel",
+                "competitor_approach": "Email-centric platform with add-on channel solutions",
+                "competitor_timeline": "SMB-focused architecture with scaling limitations",
+                "competitor_data": "Basic e-commerce segmentation capabilities",
+                "competitor_pricing": "Rapid price increases as volume grows",
+                "iterable_approach": "Native omnichannel platform built for coordination",
+                "iterable_timeline": "Enterprise-ready architecture from day one",
+                "iterable_data": "Advanced cross-channel segmentation and personalization",
+                "iterable_pricing": "Predictable enterprise pricing with volume discounts"
             },
             "Salesforce Marketing Cloud": {
-                "Iterable Advantage": "Modern Architecture & User Experience",
-                "Key Differentiator": "Intuitive interface vs. complex, consultant-dependent",
-                "Implementation": "Self-service vs. heavy professional services",
-                "Data Model": "Cloud-native vs. legacy on-premise thinking", 
-                "Pricing": "All-inclusive vs. expensive add-on modules"
+                "advantage": "Modern Architecture & Ease of Use",
+                "competitor_approach": "Complex interface requiring extensive consultant support",
+                "competitor_timeline": "Heavy professional services and lengthy implementations",
+                "competitor_data": "Legacy on-premise thinking with batch processing",
+                "competitor_pricing": "Expensive add-on modules for basic functionality",
+                "iterable_approach": "Intuitive, marketer-friendly interface",
+                "iterable_timeline": "Self-service implementation with fast time-to-value",
+                "iterable_data": "Cloud-native with real-time data processing",
+                "iterable_pricing": "All-inclusive platform with transparent pricing"
             },
             "Mailchimp": {
-                "Iterable Advantage": "Enterprise Capabilities & Advanced Automation",
-                "Key Differentiator": "Sophisticated workflows vs. basic automation",
-                "Implementation": "Enterprise security vs. SMB-focused features",
-                "Data Model": "Advanced personalization vs. template-driven approach",
-                "Pricing": "Enterprise ROI vs. feature limitations at scale"
+                "advantage": "Enterprise Automation & Advanced Features",
+                "competitor_approach": "Basic automation with template-driven campaigns",
+                "competitor_timeline": "SMB-focused with limited enterprise security",
+                "competitor_data": "Simple segmentation with personalization limits",
+                "competitor_pricing": "Feature limitations become expensive at scale",
+                "iterable_approach": "Sophisticated workflow automation with deep personalization",
+                "iterable_timeline": "Enterprise-grade security and compliance built-in",
+                "iterable_data": "Advanced behavioral triggers and dynamic content",
+                "iterable_pricing": "Enterprise ROI with advanced features included"
             },
             "SendGrid/Twilio Engage": {
-                "Iterable Advantage": "Marketing-First Platform vs. Developer Tools",
-                "Key Differentiator": "Marketer-friendly interface vs. API-first complexity", 
-                "Implementation": "Business user adoption vs. technical implementation",
-                "Data Model": "Journey orchestration vs. transactional focus",
-                "Pricing": "Marketing ROI vs. developer tooling costs"
+                "advantage": "Marketing-First Platform Design",
+                "competitor_approach": "Developer-focused tools requiring technical implementation",
+                "competitor_timeline": "API-first complexity requiring engineering resources",
+                "competitor_data": "Transactional focus with limited lifecycle marketing",
+                "competitor_pricing": "Developer tooling costs separate from marketing ROI",
+                "iterable_approach": "Built for marketers with business-user interface",
+                "iterable_timeline": "Business user adoption without technical barriers",
+                "iterable_data": "Complete customer journey orchestration",
+                "iterable_pricing": "Marketing ROI focus with business-oriented pricing"
             },
             "HubSpot": {
-                "Iterable Advantage": "Advanced Lifecycle Marketing vs. CRM-Centric", 
-                "Key Differentiator": "Specialized engagement platform vs. all-in-one limitations",
-                "Implementation": "Deep personalization vs. generic automation",
-                "Data Model": "Flexible data activation vs. CRM data constraints",
-                "Pricing": "Engagement ROI vs. CRM bundle pricing"
+                "advantage": "Specialized Engagement vs. Generic CRM",
+                "competitor_approach": "All-in-one platform with engagement as secondary feature",
+                "competitor_timeline": "Generic automation limited by CRM constraints",
+                "competitor_data": "CRM data structure limits marketing flexibility",
+                "competitor_pricing": "Bundle pricing for features you may not need",
+                "iterable_approach": "Purpose-built for customer engagement excellence",
+                "iterable_timeline": "Deep personalization without CRM limitations",
+                "iterable_data": "Flexible data activation optimized for marketing",
+                "iterable_pricing": "Pay for engagement capabilities, not CRM overhead"
             },
             "Adobe Campaign": {
-                "Iterable Advantage": "Modern Cloud Platform vs. Legacy Architecture",
-                "Key Differentiator": "User-friendly interface vs. technical complexity",
-                "Implementation": "Fast deployment vs. lengthy implementations", 
-                "Data Model": "Real-time activation vs. batch processing limitations",
-                "Pricing": "Transparent pricing vs. enterprise licensing complexity"
+                "advantage": "Modern Cloud Platform vs. Legacy System",
+                "competitor_approach": "Legacy architecture with technical complexity",
+                "competitor_timeline": "Lengthy implementations requiring specialist resources",
+                "competitor_data": "Batch processing with limited real-time capabilities",
+                "competitor_pricing": "Complex enterprise licensing with hidden costs",
+                "iterable_approach": "Modern cloud-native platform built for speed",
+                "iterable_timeline": "Fast deployment with intuitive user experience",
+                "iterable_data": "Real-time data activation and instant personalization",
+                "iterable_pricing": "Transparent SaaS pricing with predictable scaling"
             }
         }
         
-        advantages = competitive_advantages.get(primary_competitor, {})
+        details = competitive_details.get(primary_competitor, {})
         
-        if advantages:
-            # Create comparison table
-            comparison_data = [
-                ["Aspect", "Iterable", primary_competitor],
-                ["Implementation Speed", advantages.get("Implementation", "Fast"), "Varies"],
-                ["User Experience", "Marketer-friendly", "Technical"],
-                ["Data Flexibility", advantages.get("Data Model", "Flexible"), "Limited"],
-                ["Pricing Model", advantages.get("Pricing", "Transparent"), "Complex"]
-            ]
+        if details:
+            # Create before/after style comparison
+            col1, col2 = st.columns(2)
             
-            # Display as formatted table
-            st.markdown("| Aspect | Iterable | " + primary_competitor + " |")
-            st.markdown("|--------|----------|" + "-" * len(primary_competitor) + "|")
-            for row in comparison_data[1:]:  # Skip header row
-                st.markdown(f"| **{row[0]}** | ✅ {row[1]} | ⚠️ {row[2]} |")
+            with col1:
+                st.markdown(f"**{primary_competitor} Approach:**")
+                st.error(f"""
+**Implementation:**
+• {details.get('competitor_timeline', 'Complex setup')}
+• {details.get('competitor_approach', 'Technical complexity')}
+
+**Data & Personalization:**
+• {details.get('competitor_data', 'Limited flexibility')}
+
+**Pricing Model:**
+• {details.get('competitor_pricing', 'Complex pricing')}
+                """)
             
-            st.info(f"**Key Advantage:** {advantages.get('Iterable Advantage', 'Modern platform approach')}")
+            with col2:
+                st.markdown("**Iterable's Advantage:**")
+                st.success(f"""
+**Implementation:**
+• {details.get('iterable_timeline', 'Fast deployment')}
+• {details.get('iterable_approach', 'User-friendly design')}
+
+**Data & Personalization:**
+• {details.get('iterable_data', 'Advanced capabilities')}
+
+**Pricing Model:**
+• {details.get('iterable_pricing', 'Transparent pricing')}
+                """)
+            
+            st.info(f"**Key Differentiator:** {details.get('advantage', 'Modern platform approach')}")
 
     # AI-Powered Competitive Strategy
     if primary_competitor and key_priorities:
@@ -750,47 +794,6 @@ Make this sound like strategic sales guidance from an experienced solutions cons
     if hasattr(st.session_state, 'competitive_strategy') and st.session_state.competitive_strategy:
         st.markdown("**Competitive Positioning Strategy:**")
         st.success(st.session_state.competitive_strategy)
-
-    # Common Objections & Responses
-    if primary_competitor:
-        st.markdown(f"**Common Objections When Competing vs. {primary_competitor}:**")
-        
-        objections = {
-            "Braze": [
-                "\"Braze has stronger mobile capabilities\" → Highlight Iterable's unified cross-channel approach and faster implementation",
-                "\"Braze is more established\" → Focus on modern architecture advantages and customer satisfaction scores"
-            ],
-            "Klaviyo": [
-                "\"Klaviyo knows e-commerce better\" → Emphasize enterprise scalability and cross-industry expertise", 
-                "\"Klaviyo pricing is more predictable\" → Show total cost of ownership including growth limitations"
-            ],
-            "Salesforce Marketing Cloud": [
-                "\"SFMC integrates with our existing Salesforce\" → Highlight ease of use and faster time to value",
-                "\"SFMC is the enterprise standard\" → Focus on modern architecture and user adoption rates"
-            ],
-            "Mailchimp": [
-                "\"Mailchimp is much cheaper\" → Position enterprise capabilities and ROI at scale",
-                "\"Mailchimp is easier to use\" → Show advanced features that drive better results"
-            ],
-            "SendGrid/Twilio Engage": [
-                "\"We already use Twilio for communications\" → Emphasize marketing-first platform approach",
-                "\"SendGrid handles our transactional emails\" → Show lifecycle marketing vs. transactional focus"
-            ],
-            "HubSpot": [
-                "\"HubSpot gives us everything in one platform\" → Focus on best-of-breed engagement specialization",
-                "\"HubSpot CRM integration is seamless\" → Highlight data flexibility and activation capabilities"
-            ],
-            "Adobe Campaign": [
-                "\"Adobe integrates with our existing Adobe stack\" → Emphasize modern platform speed and usability",
-                "\"Adobe Campaign is proven at enterprise scale\" → Focus on implementation speed and user experience"
-            ]
-        }
-        
-        competitor_objections = objections.get(primary_competitor, [])
-        for objection in competitor_objections:
-            st.markdown(f"• {objection}")
-        
-        st.caption("*Always acknowledge the competitor's strengths professionally, then redirect to customer fit and business outcomes.*")
 col1, col2 = st.columns(2)
 
 with col1:
