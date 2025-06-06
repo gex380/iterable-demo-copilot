@@ -808,9 +808,6 @@ with st.expander("Strategic Competitive Positioning", expanded=False):
                     if priority in iterable_advantages:
                         iterable_content += f"**{priority}:**\n• {iterable_advantages[priority]}\n\n"
                 
-                # Add additional Iterable advantages in organized categories
-                iterable_content += f"""
-
                 
                 st.success(iterable_content if iterable_content else "Iterable addresses your key priorities with modern platform capabilities.")
 
