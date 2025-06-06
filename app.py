@@ -808,13 +808,24 @@ with st.expander("Strategic Competitive Positioning", expanded=False):
                     if priority in iterable_advantages:
                         iterable_content += f"**{priority}:**\n• {iterable_advantages[priority]}\n\n"
                 
-                # Add additional Iterable advantages
-                iterable_context = "• Modern cloud-native architecture built for marketing teams\n• Self-service platform requiring minimal technical resources\n• Unified customer data model across all touchpoints\n• Real-time decisioning and instant campaign updates\n• Drag-and-drop workflow builder with visual journey mapping\n• Comprehensive analytics and attribution across all channels"
-                
-                iterable_content += f"\n**Platform Advantages:**\n{iterable_context}"
+                # Add additional Iterable advantages in organized categories
+                iterable_content += f"""
+**Additional Competitive Strengths:**
+
+**Platform Architecture:**
+• Modern cloud-native infrastructure designed for marketing teams
+• Self-service setup requiring minimal technical resources
+
+**Data & Orchestration:**  
+• Unified customer data model across all touchpoints
+• Real-time decisioning and instant campaign updates
+
+**User Experience:**
+• Drag-and-drop workflow builder with visual journey mapping
+• Comprehensive analytics and attribution across all channels"""
                 
                 st.success(iterable_content if iterable_content else "Iterable addresses your key priorities with modern platform capabilities.")
 
 # --- Footer ---
 st.markdown("---")
-st.markdown("*This is a demo. Not affiliated to Iterable or any other parties.*")
+st.markdown("*This demo showcases Iterable's platform capabilities and Solutions Consultant expertise in customer journey orchestration.*")
