@@ -24,39 +24,9 @@ with st.expander("How to Use This Demo", expanded=True):
 
     ### What makes this demo powerful:
     
-    **Customer Journey Simulation**
-    - **Persona Selection**: Choose from e-commerce, SaaS, or fintech customer profiles
-    - **Dynamic Event Timeline**: Build realistic customer journeys with purchase, browse, abandon, and support events
-    - **Context-Aware AI**: All recommendations adapt based on the specific journey you create
+    This interactive demo showcases Iterable's core strength: transforming disconnected marketing tools into an intelligent, unified growth engine. Select different customer personas, simulate realistic behavioral events, and watch as the platform coordinates personalized responses across email, SMS, and push notifications in real-time. 
     
-    **Visual Journey Orchestration**  
-    - **Before/After Transformation**: See the dramatic difference between disconnected tools vs. Iterable's orchestration
-    - **Real-Time Visualization**: Watch your customer journey come to life with dynamic, color-coded progression
-    - **Professional Presentation**: Client-ready visualization that clearly demonstrates value
-    
-    **Business Impact Calculator**
-    - **MarTech Stack Configuration**: Input your current tools, team size, and monthly volume
-    - **Personalized ROI Analysis**: Get AI-generated business impact calculations specific to your situation
-    - **Industry Benchmarks**: Compare your potential results with typical Iterable customer improvements
-    
-    **AI-Powered Marketing Intelligence**
-    - **Event Suggestions**: Immediate tactical recommendations based on specific customer events and journey context
-    - **Journey Optimization**: Strategic improvements to increase conversion rates and customer lifetime value
-    - **A/B Testing Center**: Scientific approach to validating marketing decisions with specific test designs
-    
-    **Competitive Positioning Module**
-    - **Dynamic Competitor Analysis**: Professional comparisons vs. Braze, Klaviyo, Salesforce Marketing Cloud, and other major players
-    - **Priority-Based Messaging**: Positioning automatically adapts based on what matters most to your specific situation
-    - **Client-Ready Presentation**: Visual before/after competitive comparisons suitable for prospect meetings
-    
-    **Solutions Consultant Excellence**
-    - **Consultative Discovery**: Demonstrates needs assessment and solution tailoring capabilities
-    - **Technical Competence**: Shows understanding of MarTech integration and data orchestration
-    - **Business Acumen**: Quantifies value and ROI in business terms that matter to executives
-    - **Competitive Intelligence**: Professional positioning against market leaders without disparaging competitors
-    - **Presentation Skills**: Clean, engaging demo flow suitable for C-level presentations
-    
-    This showcases Iterable's unique value: turning your collection of marketing tools into an intelligent, coordinated growth engine while demonstrating the strategic thinking and technical competence expected from elite Solutions Consultants.
+    The demo combines visual journey orchestration with AI-powered recommendations, competitive positioning against major platforms like Braze and Klaviyo, and quantified ROI calculations based on your specific MarTech stack. Every feature demonstrates how Iterable eliminates data silos, automates complex workflows, and delivers measurable business impact - turning your collection of marketing tools into a coordinated customer experience that drives conversion and retention.
     """)
 
 # --- Initialize Session State ---
@@ -147,27 +117,63 @@ if st.session_state.event_timeline:
 else:
     st.markdown("_No events in timeline yet._")
 
-# --- Event Highlight Mapping ---
+# --- Event Highlight Mapping (Maps events to NEXT recommended action in journey) ---
 event_to_node_map = {
     "GlowSkin": {
-        "Cart Abandoned": "E", "Email Opened": "H", "Email Unopened": "H", "Push Notification Ignored": "K",
-        "SMS Received": "E", "Product Review Left": "D", "Wishlist Item Added": "A", "Discount Code Used": "D",
-        "Social Media Shared": "D", "Return Customer": "A", "Subscription Started": "D", "Unsubscribed": "L"
+        "Cart Abandoned": "E",           # Cart abandoned -> Send SMS (next action)
+        "Email Opened": "K",             # Email opened but no purchase -> Send Push (next action)  
+        "Email Unopened": "K",           # Email not opened -> Send Push (escalate)
+        "Push Notification Ignored": "L", # Push ignored -> Exit journey
+        "SMS Received": "H",             # SMS received but no purchase -> Send Email (next action)
+        "Product Review Left": "D",      # Review left -> Purchase completed (exit)
+        "Wishlist Item Added": "E",      # Wishlist added -> Send SMS (start engagement)
+        "Discount Code Used": "D",       # Code used -> Purchase completed (exit)
+        "Social Media Shared": "D",      # Shared -> Purchase completed (exit)
+        "Return Customer": "E",          # Return customer -> Send SMS (re-engage)
+        "Subscription Started": "D",     # Subscription -> Purchase completed (exit)
+        "Unsubscribed": "L"              # Unsubscribed -> Exit journey
     },
     "PulseFit": {
-        "User Inactive": "E", "Push Notification Sent": "E", "Email Unopened": "H", "Workout Completed": "D",
-        "App Opened": "A", "Premium Upgrade": "D", "Goal Achievement": "D", "Friend Invited": "D",
-        "Progress Photo Shared": "D", "Subscription Cancelled": "L", "Support Contact": "H", "Tutorial Skipped": "E"
+        "User Inactive": "E",            # User inactive -> Send Push (re-engage)
+        "Push Notification Sent": "H",   # Push sent but still inactive -> Send Email (next action)
+        "Email Unopened": "K",           # Email not opened -> Send SMS (escalate) 
+        "Workout Completed": "D",        # Workout done -> User engaged (exit)
+        "App Opened": "D",               # App opened -> User engaged (exit)
+        "Premium Upgrade": "D",          # Upgraded -> User engaged (exit)
+        "Goal Achievement": "D",         # Goal achieved -> User engaged (exit)
+        "Friend Invited": "D",           # Friend invited -> User engaged (exit)
+        "Progress Photo Shared": "D",    # Photo shared -> User engaged (exit)
+        "Subscription Cancelled": "L",   # Cancelled -> Exit journey
+        "Support Contact": "E",          # Support contact -> Send Push (re-engage)
+        "Tutorial Skipped": "E"          # Tutorial skipped -> Send Push (re-engage)
     },
     "JetQuest": {
-        "Flight Searched": "A", "Booking Abandoned": "E", "Email Opened": "E", "SMS Clicked": "H",
-        "Price Alert Set": "A", "Loyalty Points Earned": "D", "Review Left": "D", "Newsletter Subscribed": "H",
-        "Mobile App Downloaded": "A", "Customer Service Contact": "H", "Refund Requested": "K", "Rebooking Attempt": "E"
+        "Flight Searched": "E",          # Flight searched -> Send Email (follow up)
+        "Booking Abandoned": "E",        # Booking abandoned -> Send Email (next action)
+        "Email Opened": "H",             # Email opened but no booking -> Send SMS (next action)
+        "SMS Clicked": "K",              # SMS clicked but no booking -> Send Retargeting (next action)
+        "Price Alert Set": "E",          # Price alert set -> Send Email (follow up)
+        "Loyalty Points Earned": "D",    # Points earned -> Booking completed (exit)
+        "Review Left": "D",              # Review left -> Booking completed (exit)
+        "Newsletter Subscribed": "E",    # Newsletter subscribed -> Send Email (follow up)
+        "Mobile App Downloaded": "E",    # App downloaded -> Send Email (follow up)
+        "Customer Service Contact": "E", # Service contact -> Send Email (follow up)
+        "Refund Requested": "L",         # Refund requested -> Deal expired (exit)
+        "Rebooking Attempt": "E"         # Rebooking attempt -> Send Email (help with booking)
     },
     "LeadSync": {
-        "Trial Started": "A", "Demo Requested": "A", "Email Unopened": "E", "Feature Explored": "A",
-        "Integration Attempted": "H", "Onboarding Completed": "D", "Team Member Invited": "D", "Billing Info Added": "D",
-        "Support Ticket Created": "H", "Webinar Attended": "H", "Case Study Downloaded": "E", "Contract Signed": "D"
+        "Trial Started": "E",            # Trial started -> Send Email (setup help)
+        "Demo Requested": "E",           # Demo requested -> Send Email (follow up)
+        "Email Unopened": "H",           # Email not opened -> Send In-App (try different channel)
+        "Feature Explored": "D",         # Feature explored -> Trial converted (exit)
+        "Integration Attempted": "E",    # Integration attempted -> Send Email (help)
+        "Onboarding Completed": "D",     # Onboarding done -> Trial converted (exit)
+        "Team Member Invited": "D",      # Team invited -> Trial converted (exit)
+        "Billing Info Added": "D",       # Billing added -> Trial converted (exit)
+        "Support Ticket Created": "E",   # Support ticket -> Send Email (help)
+        "Webinar Attended": "D",         # Webinar attended -> Trial converted (exit)
+        "Case Study Downloaded": "H",    # Case study downloaded -> Send In-App (next action)
+        "Contract Signed": "D"           # Contract signed -> Trial converted (exit)
     }
 }
 
@@ -295,19 +301,32 @@ st.markdown(f"**Use Case Summary:** {summaries.get(persona, 'N/A')}")
 
 st.markdown("### What You're Seeing")
 st.info("""
-The diagram above is a dynamic visualization of the current customer journey for your selected persona.  
-Highlighted nodes represent:
-- Events you've simulated  
-- Or AI-recommended next steps based on past behavior
+The diagram above shows the automated customer journey for your selected persona. **Highlighted nodes** represent the next recommended action based on the event you've selected - this shows where Iterable would intelligently route the customer next.
 
-Use the AI suggestions to understand optimal engagement points in the journey.
+For example:
+- If a customer "Cart Abandoned" → Highlights "Send SMS" (immediate re-engagement)
+- If they "Email Opened" but didn't convert → Highlights "Send Push" (escalate with different channel)
+- If they completed a desired action → Highlights "Exit: Success" (journey complete)
+
+Use the AI suggestions below to get detailed tactical recommendations that align with the highlighted journey step.
 """)
 
-st.info("**Key Insight**: Notice how Iterable creates a unified customer experience by coordinating all your existing tools, rather than replacing them.")
+st.info("**Key Insight**: Notice how Iterable creates a unified customer experience by intelligently coordinating all your existing tools and channels, rather than replacing them.")
 
 # --- Event Status Display ---
 if highlight_node:
-    st.info(f"**Event Simulation:** {selected_event} - Highlighted in journey diagram")
+    # Map node IDs to action descriptions for better UX
+    node_descriptions = {
+        "A": "Starting customer journey",
+        "E": "Send SMS intervention", 
+        "H": "Send Email with offer",
+        "K": "Send Push notification",
+        "D": "Journey completed successfully",
+        "L": "Exit journey - no response"
+    }
+    
+    action_description = node_descriptions.get(highlight_node, "Continue journey")
+    st.info(f"**Journey Update:** {selected_event} → Next Action: {action_description} (Node {highlight_node} highlighted)")
 
 # --- AI-Powered Event & Journey Intelligence ---
 st.markdown("---")
@@ -359,22 +378,32 @@ with col1:
             event_history = ", ".join(timeline) if timeline else "No events simulated."
 
             prompt = f"""
-You are a senior marketing strategist at Iterable. Based on the customer journey for persona '{persona}', and the following event timeline:
-{event_history}
+You are a senior marketing strategist at Iterable analyzing customer behavior in context of their journey stage.
 
-Available journey steps for {persona}:
-- Send SMS (early intervention)
-- Send Email with discount offer (mid-journey)  
-- Send Push notification (final attempt)
-- Wait and monitor behavior
-- Exit/end journey
+**Customer Profile:** {persona}
+**Recent Event:** {selected_event}
+**Full Event Timeline:** {event_history}
 
-Suggest the next best campaign action. Provide:
-1. The **recommended action** (e.g. "Send Email with 10% discount")
-2. A **brief explanation** (why this is the right step strategically)
-3. **Expected outcome** (what you expect to happen)
+**Journey Context for {persona}:**
+- GlowSkin: Cart abandonment recovery flow (SMS → Email → Push → Exit)
+- PulseFit: App re-engagement flow (Push → Email → SMS → Exit)  
+- JetQuest: Booking conversion flow (Email → SMS → Retargeting → Exit)
+- LeadSync: Trial activation flow (Email → In-App → CSM Alert → Exit)
 
-Format your response clearly with headers.
+**Current Situation Analysis:**
+Based on the event "{selected_event}", determine where this customer is in their journey and what the optimal next action should be.
+
+**Provide your recommendation in this format:**
+
+**Recommended Next Action:** [Specific action like "Send SMS with 15% discount" or "Send Email with setup guide"]
+
+**Strategic Reasoning:** [2-3 sentences explaining why this is the right next step based on their current journey stage and behavior]
+
+**Expected Outcome:** [What you expect to happen and key metrics to track]
+
+**Journey Alignment:** [Confirm this aligns with the highlighted step in the visual journey diagram]
+
+Focus on actionable recommendations that match the customer's current position in the journey flow.
             """
 
             response = make_openai_request(
