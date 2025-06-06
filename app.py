@@ -38,7 +38,6 @@ def initialize_session_state():
         'next_node_id': '',
         'event_suggestion': '',
         'journey_optimization': '',
-        'ab_test_strategy': '',
         'business_impact': ''
     }
     
@@ -61,7 +60,6 @@ if persona != st.session_state.current_persona:
     st.session_state.next_node_id = ""
     st.session_state.event_suggestion = ""
     st.session_state.journey_optimization = ""
-    st.session_state.ab_test_strategy = ""
     st.session_state.business_impact = ""
     st.rerun()
 
@@ -106,7 +104,6 @@ with col2:
         st.session_state.next_node_id = ""
         st.session_state.event_suggestion = ""
         st.session_state.journey_optimization = ""
-        st.session_state.ab_test_strategy = ""
         st.session_state.business_impact = ""
         st.rerun()
 
@@ -303,19 +300,6 @@ summaries = {
 
 st.markdown(f"**Use Case Summary:** {summaries.get(persona, 'N/A')}")
 
-st.markdown("### What You're Seeing")
-st.info("""
-The diagram shows each persona's automated customer journey with intelligent progression through channels. **Highlighted nodes** show the next logical action Iterable would take based on your selected event.
-
-**Journey Logic Examples:**
-- **GlowSkin:** "Cart Abandoned" → Highlights "Send SMS" → If no response → "Send Email with 10% off" → "Send Push" → Exit
-- **PulseFit:** "User Inactive" → Highlights "Send Push" → If still inactive → "Send Email with workouts" → "Send SMS with discount" → Exit  
-- **JetQuest:** "Flight Searched" → Highlights "Send Email about expiring deal" → "Send SMS last chance" → "Retargeting Ad" → Exit
-- **LeadSync:** "Trial Started" → Highlights "Send Email setup guide" → "Send In-App help" → "Alert CSM" → Exit
-
-The AI recommendations below provide detailed tactical guidance that perfectly aligns with the highlighted journey step.
-""")
-
 st.info("**Key Insight**: Notice how Iterable intelligently orchestrates the timing, channel selection, and messaging across your entire MarTech stack based on real customer behavior.")
 
 # --- Event Status Display ---
@@ -402,7 +386,6 @@ with col1:
             
         # Clear other AI responses
         st.session_state.journey_optimization = ""
-        st.session_state.ab_test_strategy = ""
         
         with st.spinner("Generating event suggestions..."):
             timeline = st.session_state.event_timeline
@@ -463,7 +446,6 @@ with col2:
             
         # Clear other AI responses
         st.session_state.event_suggestion = ""
-        st.session_state.ab_test_strategy = ""
         
         with st.spinner("Analyzing journey optimization..."):
             timeline = st.session_state.event_timeline
@@ -658,64 +640,6 @@ IMPORTANT: Format as a brief, scannable list with numbers. Use "dollars" instead
             st.metric("Conversion Rate Lift", "25-40%", "Unified experience")
         with col3:
             st.metric("Customer Satisfaction", "+35%", "Consistent messaging")
-
-# --- A/B Testing Strategy Center ---
-st.markdown("---")
-st.subheader("A/B Testing Strategy Center")
-
-with st.expander("Scientific Testing Framework", expanded=False):
-    st.markdown("""
-    **Validate Your Marketing Decisions with Data**
-    
-    Iterable's A/B testing capabilities help you make data-driven decisions about your customer engagement strategy.
-    This module generates specific test recommendations based on your customer journey and current events.
-    """)
-    
-    if st.session_state.event_timeline:
-        if st.button("Generate A/B Test Strategy"):
-            if not check_openai_config():
-                st.stop()
-                
-            # Clear other AI responses
-            st.session_state.event_suggestion = ""
-            st.session_state.journey_optimization = ""
-            
-            with st.spinner("Designing A/B test strategy..."):
-                timeline = st.session_state.event_timeline
-                event_history = ", ".join(timeline) if timeline else "No events simulated."
-
-                prompt = f"""
-You are a conversion optimization expert designing A/B tests for Iterable's platform. Based on the customer persona '{persona}' and their journey: {event_history}
-
-Design a comprehensive A/B testing strategy including:
-
-1. **Primary Test Hypothesis** - What you want to prove/disprove
-2. **Test Variables** - Specific elements to test (subject lines, timing, channels, content)
-3. **Success Metrics** - How to measure test performance 
-4. **Sample Size & Duration** - Statistical requirements for valid results
-5. **Expected Impact** - Predicted improvement ranges
-
-Focus on tests that would have the highest impact on conversion rates and customer experience for this specific journey and persona.
-
-Make recommendations practical and implementable within Iterable's testing framework.
-                """
-
-                response = make_openai_request(
-                    prompt,
-                    "You are a conversion optimization expert specializing in A/B testing and statistical analysis for marketing campaigns.",
-                    600
-                )
-                
-                if response:
-                    st.session_state.ab_test_strategy = response
-                    st.rerun()
-    else:
-        st.info("**Build a customer journey above to get personalized A/B testing recommendations**")
-
-# Display A/B Test Strategy
-if st.session_state.ab_test_strategy:
-    st.success("**A/B Test Strategy:**")
-    st.markdown(st.session_state.ab_test_strategy)
 
 # --- Competitive Positioning Module ---
 st.markdown("---")
