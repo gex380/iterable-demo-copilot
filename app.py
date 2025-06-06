@@ -409,36 +409,41 @@ with col1:
             event_history = ", ".join(timeline) if timeline else "No events simulated."
 
             prompt = f"""
-You are a senior marketing strategist at Iterable analyzing customer behavior within their specific journey context.
+You are a senior marketing strategist at Iterable. You must provide recommendations that EXACTLY match the highlighted step in the customer journey diagram.
 
 **Customer Profile:** {persona}
 **Recent Event:** {selected_event}
-**Full Event Timeline:** {event_history}
+**Event Timeline:** {event_history}
 
-**Complete Journey Flows:**
+**CRITICAL: The journey diagram is currently highlighting this specific action:**
+{node_descriptions.get(persona, {}).get(highlight_node, "Continue journey")}
 
-**GlowSkin (Cart Recovery):** User Adds Items → Send SMS "You left something behind" → Send Email "Still want that glow? 10% off" → Send Push "Your GlowKit is waiting" → Exit
+**Complete Journey Context for {persona}:**
+- **GlowSkin:** Cart Abandonment Recovery
+  A: User Adds Items to Cart → E: Send SMS "You left something behind" → H: Send Email "Still want that glow? 10% off" → K: Send Push "Your GlowKit is waiting" → D/L: Exit
 
-**PulseFit (App Re-engagement):** User Signs Up → Send Push "Ready to crush your fitness goals?" → Send Email "5 Quick Workouts to Get Started" → Send SMS "Get 30% off premium" → Exit
+- **PulseFit:** App Re-engagement  
+  A: User Signs Up → E: Send Push "Ready to crush your fitness goals?" → H: Send Email "5 Quick Workouts to Get Started" → K: Send SMS "Get 30% off premium" → D/L: Exit
 
-**JetQuest (Booking Conversion):** User Browses Flights → Send Email "Your flight deal expires soon" → Send SMS "Last chance - save $200" → Send Retargeting Ad "Similar destinations" → Exit
+- **JetQuest:** Booking Conversion
+  A: User Browses Flights → E: Send Email "Your flight deal expires soon" → H: Send SMS "Last chance - save $200" → K: Send Retargeting Ad "Similar destinations" → D/L: Exit
 
-**LeadSync (Trial Activation):** User Starts Trial → Send Email "Complete your setup in 5 minutes" → Send In-App "Need help? Quick guide" → Alert CSM "High-value prospect needs attention" → Exit
+- **LeadSync:** Trial Activation
+  A: User Starts Trial → E: Send Email "Complete your setup in 5 minutes" → H: Send In-App "Need help? Quick guide" → K: Alert CSM "High-value prospect needs attention" → D/L: Exit
 
-**Current Situation Analysis:**
-Based on the event "{selected_event}" for {persona}, determine the logical next step in their specific journey flow.
+**MANDATORY REQUIREMENT:** Your recommendation must be about the HIGHLIGHTED ACTION ONLY: {node_descriptions.get(persona, {}).get(highlight_node, "Continue journey")}
 
 **Provide your recommendation in this format:**
 
-**Recommended Next Action:** [The specific next step from the journey flow above - be precise with channel and messaging]
+**Recommended Next Action:** [Must exactly match the highlighted action - if it's "Send SMS", recommend SMS strategy. If it's "Send Email", recommend email strategy, etc.]
 
-**Strategic Reasoning:** [2-3 sentences explaining why this specific action is the logical next step based on the event and journey stage]
+**Strategic Reasoning:** [Why this specific highlighted action is the right next step for this event]
 
-**Expected Outcome:** [What you expect to happen and key metrics to track]
+**Expected Outcome:** [What you expect from this specific action]
 
-**Journey Alignment:** [Confirm this matches the highlighted step in the visual diagram]
+**Tactical Details:** [Specific messaging, timing, or implementation guidance for this highlighted action]
 
-Your recommendation must align with the actual journey flow for {persona} and the logical progression from the "{selected_event}" event.
+Do NOT recommend any action other than what is currently highlighted in the diagram.
             """
 
             response = make_openai_request(
