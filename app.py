@@ -817,4 +817,4 @@ with st.expander("Strategic Competitive Positioning", expanded=False):
 
 # --- Footer ---
 st.markdown("---")
-st.markdown("*This demo showcases Iterable's platform capabilities and Solutions Consultant expertise in customer journey orchestration.*")
+st.markdown("*This is a demo. Not affiliated to Iterable or any other parties.*")
