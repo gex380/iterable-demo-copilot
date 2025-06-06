@@ -182,6 +182,42 @@ highlight_node = st.session_state.next_node_id or event_to_node_map.get(persona,
 highlight_class = "classDef highlight fill:#ffcc00;" if highlight_node else ""
 highlight_command = f"class {highlight_node} highlight;" if highlight_node else ""
 
+# --- Node Descriptions for UI Display ---
+node_descriptions = {
+    "GlowSkin": {
+        "A": "User adds items to cart",
+        "E": "Send SMS: 'You left something behind'", 
+        "H": "Send Email: 'Still want that glow? 10% off'",
+        "K": "Send Push: 'Your GlowKit is waiting'",
+        "D": "Exit: Purchase completed",
+        "L": "Exit: No response after 3 touches"
+    },
+    "PulseFit": {
+        "A": "User signs up for app",
+        "E": "Send Push: 'Ready to crush your fitness goals?'", 
+        "H": "Send Email: '5 Quick Workouts to Get Started'",
+        "K": "Send SMS: 'Get 30% off premium'",
+        "D": "Exit: User engaged",
+        "L": "Exit: User remains inactive"
+    },
+    "JetQuest": {
+        "A": "User browses flight deals",
+        "E": "Send Email: 'Your flight deal expires soon'", 
+        "H": "Send SMS: 'Last chance - save $200'",
+        "K": "Send Retargeting Ad: Similar destinations",
+        "D": "Exit: Booking completed",
+        "L": "Exit: Deal expired"
+    },
+    "LeadSync": {
+        "A": "User starts free trial",
+        "E": "Send Email: 'Complete your setup in 5 minutes'", 
+        "H": "Send In-App: 'Need help? Quick guide'",
+        "K": "Alert CSM: High-value prospect needs attention",
+        "D": "Exit: Trial converted",
+        "L": "Exit: Trial expired"
+    }
+}
+
 # --- Journey Definitions with Highlight Support ---
 def get_journey_flow(persona_name, highlight_class_def, highlight_command_def):
     flows = {
@@ -310,42 +346,6 @@ if highlight_node:
 # --- AI-Powered Event & Journey Intelligence ---
 st.markdown("---")
 st.subheader("AI-Powered Marketing Intelligence")
-
-# Define node descriptions for AI prompt use
-node_descriptions = {
-    "GlowSkin": {
-        "A": "User adds items to cart",
-        "E": "Send SMS: 'You left something behind'", 
-        "H": "Send Email: 'Still want that glow? 10% off'",
-        "K": "Send Push: 'Your GlowKit is waiting'",
-        "D": "Exit: Purchase completed",
-        "L": "Exit: No response after 3 touches"
-    },
-    "PulseFit": {
-        "A": "User signs up for app",
-        "E": "Send Push: 'Ready to crush your fitness goals?'", 
-        "H": "Send Email: '5 Quick Workouts to Get Started'",
-        "K": "Send SMS: 'Get 30% off premium'",
-        "D": "Exit: User engaged",
-        "L": "Exit: User remains inactive"
-    },
-    "JetQuest": {
-        "A": "User browses flight deals",
-        "E": "Send Email: 'Your flight deal expires soon'", 
-        "H": "Send SMS: 'Last chance - save $200'",
-        "K": "Send Retargeting Ad: Similar destinations",
-        "D": "Exit: Booking completed",
-        "L": "Exit: Deal expired"
-    },
-    "LeadSync": {
-        "A": "User starts free trial",
-        "E": "Send Email: 'Complete your setup in 5 minutes'", 
-        "H": "Send In-App: 'Need help? Quick guide'",
-        "K": "Alert CSM: High-value prospect needs attention",
-        "D": "Exit: Trial converted",
-        "L": "Exit: Trial expired"
-    }
-}
 
 # Check if OpenAI API key is available
 def check_openai_config():
