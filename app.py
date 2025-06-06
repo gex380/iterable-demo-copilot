@@ -810,19 +810,7 @@ with st.expander("Strategic Competitive Positioning", expanded=False):
                 
                 # Add additional Iterable advantages in organized categories
                 iterable_content += f"""
-**Additional Competitive Strengths:**
 
-**Platform Architecture:**
-• Modern cloud-native infrastructure designed for marketing teams
-• Self-service setup requiring minimal technical resources
-
-**Data & Orchestration:**  
-• Unified customer data model across all touchpoints
-• Real-time decisioning and instant campaign updates
-
-**User Experience:**
-• Drag-and-drop workflow builder with visual journey mapping
-• Comprehensive analytics and attribution across all channels"""
                 
                 st.success(iterable_content if iterable_content else "Iterable addresses your key priorities with modern platform capabilities.")
 
