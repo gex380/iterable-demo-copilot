@@ -117,63 +117,67 @@ if st.session_state.event_timeline:
 else:
     st.markdown("_No events in timeline yet._")
 
-# --- Event Highlight Mapping (Maps events to NEXT recommended action in journey) ---
+# --- Event Highlight Mapping (Maps events to logical NEXT action based on journey flows) ---
 event_to_node_map = {
     "GlowSkin": {
-        "Cart Abandoned": "E",           # Cart abandoned -> Send SMS (next action)
-        "Email Opened": "K",             # Email opened but no purchase -> Send Push (next action)  
-        "Email Unopened": "K",           # Email not opened -> Send Push (escalate)
-        "Push Notification Ignored": "L", # Push ignored -> Exit journey
-        "SMS Received": "H",             # SMS received but no purchase -> Send Email (next action)
-        "Product Review Left": "D",      # Review left -> Purchase completed (exit)
-        "Wishlist Item Added": "E",      # Wishlist added -> Send SMS (start engagement)
-        "Discount Code Used": "D",       # Code used -> Purchase completed (exit)
-        "Social Media Shared": "D",      # Shared -> Purchase completed (exit)
-        "Return Customer": "E",          # Return customer -> Send SMS (re-engage)
-        "Subscription Started": "D",     # Subscription -> Purchase completed (exit)
-        "Unsubscribed": "L"              # Unsubscribed -> Exit journey
+        # Cart abandonment journey: A→E(SMS)→H(Email)→K(Push)→L(Exit)
+        "Cart Abandoned": "E",           # Just abandoned → Send SMS (first intervention)
+        "Email Opened": "K",             # Email opened but no purchase → Send Push (final attempt)  
+        "Email Unopened": "K",           # Email not opened → Send Push (escalate)
+        "Push Notification Ignored": "L", # Push ignored → Exit journey (no response after 3 touches)
+        "SMS Received": "H",             # SMS received but no purchase → Send Email with discount
+        "Product Review Left": "D",      # Review indicates purchase → Exit: Purchase Completed
+        "Wishlist Item Added": "E",      # Shows interest but no purchase → Send SMS
+        "Discount Code Used": "D",       # Code usage indicates purchase → Exit: Purchase Completed
+        "Social Media Shared": "D",      # Sharing indicates satisfaction/purchase → Exit: Purchase Completed
+        "Return Customer": "A",          # Return customer starts new journey → User Adds Items to Cart
+        "Subscription Started": "D",     # Subscription indicates conversion → Exit: Purchase Completed
+        "Unsubscribed": "L"              # Unsubscribed → Exit: No Response After 3 Touches
     },
     "PulseFit": {
-        "User Inactive": "E",            # User inactive -> Send Push (re-engage)
-        "Push Notification Sent": "H",   # Push sent but still inactive -> Send Email (next action)
-        "Email Unopened": "K",           # Email not opened -> Send SMS (escalate) 
-        "Workout Completed": "D",        # Workout done -> User engaged (exit)
-        "App Opened": "D",               # App opened -> User engaged (exit)
-        "Premium Upgrade": "D",          # Upgraded -> User engaged (exit)
-        "Goal Achievement": "D",         # Goal achieved -> User engaged (exit)
-        "Friend Invited": "D",           # Friend invited -> User engaged (exit)
-        "Progress Photo Shared": "D",    # Photo shared -> User engaged (exit)
-        "Subscription Cancelled": "L",   # Cancelled -> Exit journey
-        "Support Contact": "E",          # Support contact -> Send Push (re-engage)
-        "Tutorial Skipped": "E"          # Tutorial skipped -> Send Push (re-engage)
+        # App engagement journey: A→E(Push)→H(Email)→K(SMS)→L(Exit)
+        "User Inactive": "E",            # User inactive after signup → Send Push (re-engagement)
+        "Push Notification Sent": "H",   # Push sent but still inactive → Send Email (workout tips)
+        "Email Unopened": "K",           # Email not opened → Send SMS with discount
+        "Workout Completed": "D",        # Workout done → Exit: User Engaged (success)
+        "App Opened": "D",               # App opened shows engagement → Exit: User Engaged
+        "Premium Upgrade": "D",          # Upgrade indicates engagement → Exit: User Engaged
+        "Goal Achievement": "D",         # Goal achieved shows engagement → Exit: User Engaged
+        "Friend Invited": "D",           # Social sharing shows engagement → Exit: User Engaged
+        "Progress Photo Shared": "D",    # Photo sharing shows engagement → Exit: User Engaged
+        "Subscription Cancelled": "L",   # Cancelled → Exit: User Remains Inactive
+        "Support Contact": "H",          # Support needed → Send Email with workout help
+        "Tutorial Skipped": "E"          # Tutorial skipped shows disengagement → Send Push
     },
     "JetQuest": {
-        "Flight Searched": "E",          # Flight searched -> Send Email (follow up)
-        "Booking Abandoned": "E",        # Booking abandoned -> Send Email (next action)
-        "Email Opened": "H",             # Email opened but no booking -> Send SMS (next action)
-        "SMS Clicked": "K",              # SMS clicked but no booking -> Send Retargeting (next action)
-        "Price Alert Set": "E",          # Price alert set -> Send Email (follow up)
-        "Loyalty Points Earned": "D",    # Points earned -> Booking completed (exit)
-        "Review Left": "D",              # Review left -> Booking completed (exit)
-        "Newsletter Subscribed": "E",    # Newsletter subscribed -> Send Email (follow up)
-        "Mobile App Downloaded": "E",    # App downloaded -> Send Email (follow up)
-        "Customer Service Contact": "E", # Service contact -> Send Email (follow up)
-        "Refund Requested": "L",         # Refund requested -> Deal expired (exit)
-        "Rebooking Attempt": "E"         # Rebooking attempt -> Send Email (help with booking)
+        # Booking conversion journey: A→E(Email)→H(SMS)→K(Retargeting)→L(Exit)
+        "Flight Searched": "E",          # Flight searched but not booked → Send Email (deal expires)
+        "Booking Abandoned": "E",        # Booking abandoned → Send Email (deal expires)
+        "Email Opened": "H",             # Email opened but no booking → Send SMS (last chance)
+        "SMS Clicked": "K",              # SMS clicked but no booking → Send Retargeting Ad
+        "Price Alert Set": "E",          # Price alert shows interest → Send Email about deals
+        "Loyalty Points Earned": "D",    # Points earned indicates booking → Exit: Booking Completed
+        "Review Left": "D",              # Review indicates completed trip → Exit: Booking Completed
+        "Newsletter Subscribed": "E",    # Newsletter signup shows interest → Send Email with deals
+        "Mobile App Downloaded": "E",    # App download shows interest → Send Email with deals
+        "Customer Service Contact": "E", # Service contact → Send Email (helpful follow-up)
+        "Refund Requested": "L",         # Refund requested → Exit: Deal Expired
+        "Rebooking Attempt": "E"         # Rebooking shows continued interest → Send Email
     },
     "LeadSync": {
-        "Trial Started": "E",            # Trial started -> Send Email (setup help)
-        "Demo Requested": "E",           # Demo requested -> Send Email (follow up)
-        "Email Unopened": "H",           # Email not opened -> Send In-App (try different channel)
-        "Feature Explored": "D",         # Feature explored -> Trial converted (exit)
-        "Integration Attempted": "E",    # Integration attempted -> Send Email (help)
-        "Onboarding Completed": "D",     # Onboarding done -> Trial converted (exit)
-        "Team Member Invited": "D",      # Team invited -> Trial converted (exit)
-        "Billing Info Added": "D",       # Billing added -> Trial converted (exit)
-        "Support Ticket Created": "E",   # Support ticket -> Send Email (help)
-        "Webinar Attended": "D",         # Webinar attended -> Trial converted (exit)
-        "Case Study Downloaded": "H",    # Case study downloaded -> Send In-App (next action)
-        "Contract Signed": "D"           # Contract signed -> Trial converted (exit)
+        # Trial activation journey: A→E(Email)→H(In-App)→K(CSM Alert)→L(Exit)
+        "Trial Started": "E",            # Trial started → Send Email (setup guidance)
+        "Demo Requested": "E",           # Demo requested → Send Email (follow up)
+        "Email Unopened": "H",           # Email not opened → Send In-App message
+        "Feature Explored": "D",         # Feature exploration shows engagement → Exit: Trial Converted
+        "Integration Attempted": "H",    # Integration attempted but may need help → Send In-App guide
+        "Onboarding Completed": "D",     # Onboarding done shows success → Exit: Trial Converted
+        "Team Member Invited": "D",      # Team invitation shows commitment → Exit: Trial Converted
+        "Billing Info Added": "D",       # Billing added indicates conversion → Exit: Trial Converted
+        "Support Ticket Created": "H",   # Support needed → Send In-App help
+        "Webinar Attended": "D",         # Webinar attendance shows engagement → Exit: Trial Converted
+        "Case Study Downloaded": "H",    # Case study download shows interest → Send In-App guide
+        "Contract Signed": "D"           # Contract signed → Exit: Trial Converted
     }
 }
 
@@ -301,32 +305,59 @@ st.markdown(f"**Use Case Summary:** {summaries.get(persona, 'N/A')}")
 
 st.markdown("### What You're Seeing")
 st.info("""
-The diagram above shows the automated customer journey for your selected persona. **Highlighted nodes** represent the next recommended action based on the event you've selected - this shows where Iterable would intelligently route the customer next.
+The diagram shows each persona's automated customer journey with intelligent progression through channels. **Highlighted nodes** show the next logical action Iterable would take based on your selected event.
 
-For example:
-- If a customer "Cart Abandoned" → Highlights "Send SMS" (immediate re-engagement)
-- If they "Email Opened" but didn't convert → Highlights "Send Push" (escalate with different channel)
-- If they completed a desired action → Highlights "Exit: Success" (journey complete)
+**Journey Logic Examples:**
+- **GlowSkin:** "Cart Abandoned" → Highlights "Send SMS" → If no response → "Send Email with 10% off" → "Send Push" → Exit
+- **PulseFit:** "User Inactive" → Highlights "Send Push" → If still inactive → "Send Email with workouts" → "Send SMS with discount" → Exit  
+- **JetQuest:** "Flight Searched" → Highlights "Send Email about expiring deal" → "Send SMS last chance" → "Retargeting Ad" → Exit
+- **LeadSync:** "Trial Started" → Highlights "Send Email setup guide" → "Send In-App help" → "Alert CSM" → Exit
 
-Use the AI suggestions below to get detailed tactical recommendations that align with the highlighted journey step.
+The AI recommendations below provide detailed tactical guidance that perfectly aligns with the highlighted journey step.
 """)
 
-st.info("**Key Insight**: Notice how Iterable creates a unified customer experience by intelligently coordinating all your existing tools and channels, rather than replacing them.")
+st.info("**Key Insight**: Notice how Iterable intelligently orchestrates the timing, channel selection, and messaging across your entire MarTech stack based on real customer behavior.")
 
 # --- Event Status Display ---
 if highlight_node:
-    # Map node IDs to action descriptions for better UX
+    # Map node IDs to action descriptions based on actual journey flows
     node_descriptions = {
-        "A": "Starting customer journey",
-        "E": "Send SMS intervention", 
-        "H": "Send Email with offer",
-        "K": "Send Push notification",
-        "D": "Journey completed successfully",
-        "L": "Exit journey - no response"
+        "GlowSkin": {
+            "A": "User adds items to cart",
+            "E": "Send SMS: 'You left something behind'", 
+            "H": "Send Email: 'Still want that glow? 10% off'",
+            "K": "Send Push: 'Your GlowKit is waiting'",
+            "D": "Exit: Purchase completed",
+            "L": "Exit: No response after 3 touches"
+        },
+        "PulseFit": {
+            "A": "User signs up for app",
+            "E": "Send Push: 'Ready to crush your fitness goals?'", 
+            "H": "Send Email: '5 Quick Workouts to Get Started'",
+            "K": "Send SMS: 'Get 30% off premium'",
+            "D": "Exit: User engaged",
+            "L": "Exit: User remains inactive"
+        },
+        "JetQuest": {
+            "A": "User browses flight deals",
+            "E": "Send Email: 'Your flight deal expires soon'", 
+            "H": "Send SMS: 'Last chance - save $200'",
+            "K": "Send Retargeting Ad: Similar destinations",
+            "D": "Exit: Booking completed",
+            "L": "Exit: Deal expired"
+        },
+        "LeadSync": {
+            "A": "User starts free trial",
+            "E": "Send Email: 'Complete your setup in 5 minutes'", 
+            "H": "Send In-App: 'Need help? Quick guide'",
+            "K": "Alert CSM: High-value prospect needs attention",
+            "D": "Exit: Trial converted",
+            "L": "Exit: Trial expired"
+        }
     }
     
-    action_description = node_descriptions.get(highlight_node, "Continue journey")
-    st.info(f"**Journey Update:** {selected_event} → Next Action: {action_description} (Node {highlight_node} highlighted)")
+    action_description = node_descriptions.get(persona, {}).get(highlight_node, "Continue journey")
+    st.info(f"**Journey Update:** {selected_event} → Next Action: {action_description}")
 
 # --- AI-Powered Event & Journey Intelligence ---
 st.markdown("---")
@@ -378,32 +409,36 @@ with col1:
             event_history = ", ".join(timeline) if timeline else "No events simulated."
 
             prompt = f"""
-You are a senior marketing strategist at Iterable analyzing customer behavior in context of their journey stage.
+You are a senior marketing strategist at Iterable analyzing customer behavior within their specific journey context.
 
 **Customer Profile:** {persona}
 **Recent Event:** {selected_event}
 **Full Event Timeline:** {event_history}
 
-**Journey Context for {persona}:**
-- GlowSkin: Cart abandonment recovery flow (SMS → Email → Push → Exit)
-- PulseFit: App re-engagement flow (Push → Email → SMS → Exit)  
-- JetQuest: Booking conversion flow (Email → SMS → Retargeting → Exit)
-- LeadSync: Trial activation flow (Email → In-App → CSM Alert → Exit)
+**Complete Journey Flows:**
+
+**GlowSkin (Cart Recovery):** User Adds Items → Send SMS "You left something behind" → Send Email "Still want that glow? 10% off" → Send Push "Your GlowKit is waiting" → Exit
+
+**PulseFit (App Re-engagement):** User Signs Up → Send Push "Ready to crush your fitness goals?" → Send Email "5 Quick Workouts to Get Started" → Send SMS "Get 30% off premium" → Exit
+
+**JetQuest (Booking Conversion):** User Browses Flights → Send Email "Your flight deal expires soon" → Send SMS "Last chance - save $200" → Send Retargeting Ad "Similar destinations" → Exit
+
+**LeadSync (Trial Activation):** User Starts Trial → Send Email "Complete your setup in 5 minutes" → Send In-App "Need help? Quick guide" → Alert CSM "High-value prospect needs attention" → Exit
 
 **Current Situation Analysis:**
-Based on the event "{selected_event}", determine where this customer is in their journey and what the optimal next action should be.
+Based on the event "{selected_event}" for {persona}, determine the logical next step in their specific journey flow.
 
 **Provide your recommendation in this format:**
 
-**Recommended Next Action:** [Specific action like "Send SMS with 15% discount" or "Send Email with setup guide"]
+**Recommended Next Action:** [The specific next step from the journey flow above - be precise with channel and messaging]
 
-**Strategic Reasoning:** [2-3 sentences explaining why this is the right next step based on their current journey stage and behavior]
+**Strategic Reasoning:** [2-3 sentences explaining why this specific action is the logical next step based on the event and journey stage]
 
 **Expected Outcome:** [What you expect to happen and key metrics to track]
 
-**Journey Alignment:** [Confirm this aligns with the highlighted step in the visual journey diagram]
+**Journey Alignment:** [Confirm this matches the highlighted step in the visual diagram]
 
-Focus on actionable recommendations that match the customer's current position in the journey flow.
+Your recommendation must align with the actual journey flow for {persona} and the logical progression from the "{selected_event}" event.
             """
 
             response = make_openai_request(
