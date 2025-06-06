@@ -304,48 +304,48 @@ st.info("**Key Insight**: Notice how Iterable intelligently orchestrates the tim
 
 # --- Event Status Display ---
 if highlight_node:
-    # Map node IDs to action descriptions based on actual journey flows
-    node_descriptions = {
-        "GlowSkin": {
-            "A": "User adds items to cart",
-            "E": "Send SMS: 'You left something behind'", 
-            "H": "Send Email: 'Still want that glow? 10% off'",
-            "K": "Send Push: 'Your GlowKit is waiting'",
-            "D": "Exit: Purchase completed",
-            "L": "Exit: No response after 3 touches"
-        },
-        "PulseFit": {
-            "A": "User signs up for app",
-            "E": "Send Push: 'Ready to crush your fitness goals?'", 
-            "H": "Send Email: '5 Quick Workouts to Get Started'",
-            "K": "Send SMS: 'Get 30% off premium'",
-            "D": "Exit: User engaged",
-            "L": "Exit: User remains inactive"
-        },
-        "JetQuest": {
-            "A": "User browses flight deals",
-            "E": "Send Email: 'Your flight deal expires soon'", 
-            "H": "Send SMS: 'Last chance - save $200'",
-            "K": "Send Retargeting Ad: Similar destinations",
-            "D": "Exit: Booking completed",
-            "L": "Exit: Deal expired"
-        },
-        "LeadSync": {
-            "A": "User starts free trial",
-            "E": "Send Email: 'Complete your setup in 5 minutes'", 
-            "H": "Send In-App: 'Need help? Quick guide'",
-            "K": "Alert CSM: High-value prospect needs attention",
-            "D": "Exit: Trial converted",
-            "L": "Exit: Trial expired"
-        }
-    }
-    
     action_description = node_descriptions.get(persona, {}).get(highlight_node, "Continue journey")
     st.info(f"**Journey Update:** {selected_event} → Next Action: {action_description}")
 
 # --- AI-Powered Event & Journey Intelligence ---
 st.markdown("---")
 st.subheader("AI-Powered Marketing Intelligence")
+
+# Define node descriptions for AI prompt use
+node_descriptions = {
+    "GlowSkin": {
+        "A": "User adds items to cart",
+        "E": "Send SMS: 'You left something behind'", 
+        "H": "Send Email: 'Still want that glow? 10% off'",
+        "K": "Send Push: 'Your GlowKit is waiting'",
+        "D": "Exit: Purchase completed",
+        "L": "Exit: No response after 3 touches"
+    },
+    "PulseFit": {
+        "A": "User signs up for app",
+        "E": "Send Push: 'Ready to crush your fitness goals?'", 
+        "H": "Send Email: '5 Quick Workouts to Get Started'",
+        "K": "Send SMS: 'Get 30% off premium'",
+        "D": "Exit: User engaged",
+        "L": "Exit: User remains inactive"
+    },
+    "JetQuest": {
+        "A": "User browses flight deals",
+        "E": "Send Email: 'Your flight deal expires soon'", 
+        "H": "Send SMS: 'Last chance - save $200'",
+        "K": "Send Retargeting Ad: Similar destinations",
+        "D": "Exit: Booking completed",
+        "L": "Exit: Deal expired"
+    },
+    "LeadSync": {
+        "A": "User starts free trial",
+        "E": "Send Email: 'Complete your setup in 5 minutes'", 
+        "H": "Send In-App: 'Need help? Quick guide'",
+        "K": "Alert CSM: High-value prospect needs attention",
+        "D": "Exit: Trial converted",
+        "L": "Exit: Trial expired"
+    }
+}
 
 # Check if OpenAI API key is available
 def check_openai_config():
@@ -817,4 +817,4 @@ with st.expander("Strategic Competitive Positioning", expanded=False):
 
 # --- Footer ---
 st.markdown("---")
-st.markdown("*This demo showcases Iterable's platform capabilities and Solutions Consultant expertise in customer journey orchestration.* It is not associated with the actual Iterable company nor should be associated. Just for demo purposes")
+st.markdown("*This demo showcases Iterable's platform capabilities and Solutions Consultant expertise in customer journey orchestration.*")
