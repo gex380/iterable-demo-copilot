@@ -797,7 +797,6 @@ with st.expander("Strategic Competitive Positioning", expanded=False):
                     "Adobe Campaign": "• Legacy platform with outdated user interface\n• Complex implementation requiring specialized consultants\n• Batch processing limitations impact real-time capabilities"
                 }
                 
-                competitor_content += f"\n**Additional Challenges:**\n{additional_context.get(primary_competitor, '')}"
                 
                 st.error(competitor_content if competitor_content else f"{primary_competitor} approach has limitations in your priority areas.")
             
