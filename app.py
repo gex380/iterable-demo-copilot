@@ -19,8 +19,8 @@ with st.expander("How to Use This Demo", expanded=True):
     2. **Simulate user events** to build behavioral timelines
     3. **Visualize customer journeys** with dynamic flow diagrams
     4. **Get AI-powered recommendations** tailored to specific customer behavior
-    5. **Explore A/B testing strategies** with statistical rigor
-    6. **See Iterable's ROI impact** on your existing MarTech stack
+    5. **See Iterable's ROI impact** on your existing MarTech stack
+    6. **Compare Iterable's solution to main competitors"
 
     ### What makes this demo powerful:
     
