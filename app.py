@@ -784,17 +784,17 @@ with st.expander("Strategic Competitive Positioning", expanded=False):
                 competitor_content = ""
                 for priority in key_priorities:
                     if priority in competitor_challenges[primary_competitor]:
-                        competitor_content += f"**{priority}:**\n• {competitor_challenges[primary_competitor][priority]}\n\n"
+                        competitor_content += f"**{priority}:**\n {competitor_challenges[primary_competitor][priority]}\n\n"
                 
                 # Add additional context based on competitor
                 additional_context = {
-                    "Braze": "• Complex technical setup requiring developer resources\n• Steep learning curve for marketing teams\n• Hidden implementation costs and ongoing maintenance overhead",
-                    "Klaviyo": "• Limited enterprise features and scalability constraints\n• E-commerce focus limits cross-industry applicability\n• Rapid cost escalation as usage grows beyond SMB levels",
-                    "Salesforce Marketing Cloud": "• Requires extensive consultant support and training\n• Module-based architecture creates feature silos\n• Legacy architecture impacts performance and user experience",
-                    "Mailchimp": "• Basic automation capabilities insufficient for enterprise needs\n• Limited data flexibility and advanced segmentation options\n• Template-driven approach restricts personalization depth",
-                    "SendGrid/Twilio Engage": "• Developer-first platform requires technical expertise\n• Limited marketing-specific features and journey capabilities\n• API complexity creates barriers for marketing team adoption",
-                    "HubSpot": "• All-in-one approach creates feature limitations\n• CRM-centric design constrains marketing flexibility\n• Generic automation lacks specialized engagement capabilities",
-                    "Adobe Campaign": "• Legacy platform with outdated user interface\n• Complex implementation requiring specialized consultants\n• Batch processing limitations impact real-time capabilities"
+                    "Braze": " Complex technical setup requiring developer resources\n Steep learning curve for marketing teams\n Hidden implementation costs and ongoing maintenance overhead",
+                    "Klaviyo": " Limited enterprise features and scalability constraints\n E-commerce focus limits cross-industry applicability\n Rapid cost escalation as usage grows beyond SMB levels",
+                    "Salesforce Marketing Cloud": " Requires extensive consultant support and training\n Module-based architecture creates feature silos\n Legacy architecture impacts performance and user experience",
+                    "Mailchimp": " Basic automation capabilities insufficient for enterprise needs\n Limited data flexibility and advanced segmentation options\n Template-driven approach restricts personalization depth",
+                    "SendGrid/Twilio Engage": " Developer-first platform requires technical expertise\n Limited marketing-specific features and journey capabilities\n API complexity creates barriers for marketing team adoption",
+                    "HubSpot": " All-in-one approach creates feature limitations\n CRM-centric design constrains marketing flexibility\n Generic automation lacks specialized engagement capabilities",
+                    "Adobe Campaign": " Legacy platform with outdated user interface\n Complex implementation requiring specialized consultants\n Batch processing limitations impact real-time capabilities"
                 }
                 
                 
@@ -805,7 +805,7 @@ with st.expander("Strategic Competitive Positioning", expanded=False):
                 iterable_content = ""
                 for priority in key_priorities:
                     if priority in iterable_advantages:
-                        iterable_content += f"**{priority}:**\n• {iterable_advantages[priority]}\n\n"
+                        iterable_content += f"**{priority}:**\n {iterable_advantages[priority]}\n\n"
                 
                 
                 st.success(iterable_content if iterable_content else "Iterable addresses your key priorities with modern platform capabilities.")
